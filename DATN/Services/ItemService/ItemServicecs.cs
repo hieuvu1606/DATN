@@ -96,11 +96,12 @@ namespace DATN.Services.ItemService
                     newItem.WarrantyPeriod = item.WarrantyPeriod;
                     newItem.MaintenanceTime =  item.MaintenanceTime;
                     newItem.Status = "Mới";
-                    newItem.LastMaintenance = item.LastMaintenance;
+                    newItem.LastMaintenance = DateOnly.FromDateTime(DateTime.Now);
                     newItem.ImporterId = item.ImporterId;
                     newItem.PosId = item.PosId;
                     newItem.IsStored = true;
-                    newItem.ImportDate = item.ImportDate;
+                    newItem.ImportDate = DateTime.Now;
+                    newItem.Qr = "";
 
                     _db.Items.Add(newItem);
                     _db.SaveChanges();
