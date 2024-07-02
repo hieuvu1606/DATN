@@ -95,8 +95,18 @@ namespace DATN.Services.ItemService
                     newItem.DeviceId = item.DeviceId;
                     newItem.WarrantyPeriod = item.WarrantyPeriod;
                     newItem.MaintenanceTime =  item.MaintenanceTime;
-                    newItem.Status = "Mới";
-                    newItem.LastMaintenance = DateOnly.FromDateTime(DateTime.Now);
+
+                    if (item.Status != null || item.Status != "")
+                        newItem.Status = item.Status;
+                    else
+                        newItem.Status = "";
+
+
+                    if (item.LastMaintenance.HasValue)
+                        newItem.LastMaintenance = new DateOnly(item.LastMaintenance.Value.Year, item.LastMaintenance.Value.Month, item.LastMaintenance.Value.Day);
+                    else
+                        newItem.LastMaintenance = new DateOnly(0,0,0);
+
                     newItem.ImporterId = item.ImporterId;
                     newItem.PosId = item.PosId;
                     newItem.IsStored = true;

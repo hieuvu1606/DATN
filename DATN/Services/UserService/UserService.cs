@@ -29,7 +29,7 @@ namespace DATN.Services.UserService
                 {
                     _emailService.Connect();
 
-                    var (account, password) = AccountGenerator.GenerateAccountAndRandomPassword(user.Name, user.Surname);
+                    var (account, password) = AccountGenerator.GenerateAccountAndRandomPassword(user.Name, user.Surname, _db);
 
                     var hashedPassword = PasswordHasher.HashPassword(password);
 
@@ -167,7 +167,7 @@ namespace DATN.Services.UserService
                     {
                         return new BadRequestObjectResult(new { error = "Can't Found User" });
                     }
-                    var (newAccount, newPassword) = AccountGenerator.GenerateAccountAndRandomPassword("","");
+                    var (newAccount, newPassword) = AccountGenerator.GenerateAccountAndRandomPassword("","", _db);
 
                     user.Password = newPassword;
                     _db.SaveChanges();
