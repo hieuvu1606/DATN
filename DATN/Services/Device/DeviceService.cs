@@ -98,18 +98,21 @@ namespace DATN.Services.DeviceService
             var validFilter = new PaginationFilter(filter.page, filter.pageSize);
 
             var lst = (
-                       from i in _db.Items
-                       join d in _db.Devices on i.DeviceId equals d.DeviceId
-                       group new { i, d } by new { d.DeviceId, d.Descr, d.ShortDescr } into g
+                       from d in _db.Devices
+                       join i in _db.Items on d.DeviceId equals i.DeviceId into itemsGroup
+                       from ig in itemsGroup.DefaultIfEmpty()
+                       group new { ig, d } by new { d.DeviceId, d.Descr, d.ShortDescr } into g
                        select new GetDevice
                        {
                            DeviceID = g.Key.DeviceId,
                            DeviceDescr = g.Key.Descr,
                            DeviceShortDescr = g.Key.ShortDescr,
-                           CurrentAmount = g.Sum(x => x.i.IsStored ? 1 : 0),
-                           TotalAmount = g.Count()
-                       }).Skip((validFilter.page - 1) * validFilter.pageSize)
-                        .Take(validFilter.pageSize).ToList();
+                           CurrentAmount = g.Sum(x => x.ig != null && x.ig.IsStored ? 1 : 0),
+                           TotalAmount = g.Count(x => x.ig != null)
+                       })
+                       .Skip((validFilter.page - 1) * validFilter.pageSize)
+                       .Take(validFilter.pageSize)
+                       .ToList();
 
             var count = lst.Count();
 
@@ -120,20 +123,23 @@ namespace DATN.Services.DeviceService
         {
             var validFilter = new PaginationFilter(filter.page, filter.pageSize);
 
-            var lst = (from i in _db.Items
-                       join d in _db.Devices on i.DeviceId equals d.DeviceId
-                       group new { i, d } by new { d.DeviceId, d.Descr, d.ShortDescr } into g
-                       select new GetDevice
-                       {
-                           DeviceID = g.Key.DeviceId,
-                           DeviceDescr = g.Key.Descr,
-                           DeviceShortDescr = g.Key.ShortDescr,
-                           CurrentAmount = g.Sum(x => x.i.IsStored ? 1 : 0),
-                           TotalAmount = g.Count()
-                       })
-                       .Where(p => p.DeviceDescr.Contains(name) || p.DeviceShortDescr.Contains(name))
-                       .Skip((validFilter.page - 1) * validFilter.pageSize)
-                        .Take(validFilter.pageSize).ToList();
+            var lst = (
+                        from d in _db.Devices
+                        join i in _db.Items on d.DeviceId equals i.DeviceId into itemsGroup
+                        from ig in itemsGroup.DefaultIfEmpty()
+                        group new { ig, d } by new { d.DeviceId, d.Descr, d.ShortDescr } into g
+                        select new GetDevice
+                        {
+                            DeviceID = g.Key.DeviceId,
+                            DeviceDescr = g.Key.Descr,
+                            DeviceShortDescr = g.Key.ShortDescr,
+                            CurrentAmount = g.Sum(x => x.ig != null && x.ig.IsStored ? 1 : 0),
+                            TotalAmount = g.Count(x => x.ig != null)
+                        })
+                        .Where(p => p.DeviceDescr.Contains(name) || p.DeviceShortDescr.Contains(name))
+                        .Skip((validFilter.page - 1) * validFilter.pageSize)
+                        .Take(validFilter.pageSize)
+                        .ToList();
 
             var count = lst.Count();
 
