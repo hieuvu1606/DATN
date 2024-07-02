@@ -1,4 +1,4 @@
-﻿namespace DATN.Models
+﻿namespace DATN.CustomModels
 {
     public class RegisterUser
     {

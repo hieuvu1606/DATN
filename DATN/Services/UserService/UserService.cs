@@ -47,6 +47,7 @@ namespace DATN.Services.UserService
                     newUser.RandomPassword = true;
 
                     _db.Users.Add(newUser);
+                    _db.SaveChanges();
                     transaction.Commit();
 
                     var subject = "Account Information DATN";

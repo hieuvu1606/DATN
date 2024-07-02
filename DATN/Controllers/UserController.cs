@@ -2,7 +2,6 @@
 using DATN.Services.UserService;
 using DATN.Services.RoleService;
 using Microsoft.AspNetCore.Authorization;
-using DATN.Models;
 using DATN.CustomModels;
 
 namespace DATN.Controllers

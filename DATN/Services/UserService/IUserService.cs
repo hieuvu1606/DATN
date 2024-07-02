@@ -1,5 +1,4 @@
 ﻿using DATN.CustomModels;
-using DATN.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DATN.Services.UserService
