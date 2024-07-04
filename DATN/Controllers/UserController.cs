@@ -53,6 +53,27 @@ namespace DATN.Controllers
         {
             return new OkObjectResult(file);
         }
+
+        [HttpDelete]
+        [Route("delete/{id}")]
+        public IActionResult Delete(int id)
+        {
+            return _userService.Delete(id);
+        }
+
+        [HttpPost]
+        [Route("resetPassword")]
+        public IActionResult ResetPassword(int id)
+        {
+            return _userService.ResetPassword(id);
+        }
+
+        [HttpPost]
+        [Route("updateRole/{userID}&{roleID}")]
+        public IActionResult UpdateRoleint (int userID, int roleID)
+        {
+            return _userService.UpdateRole(userID, roleID);
+        }
         
     }
 }

@@ -114,7 +114,7 @@ namespace DATN.Services.DeviceService
                        .Take(validFilter.pageSize)
                        .ToList();
 
-            var count = lst.Count();
+            var count = _db.Devices.Count();
 
             return new OkObjectResult(new PagedResponse<List<GetDevice>>(lst, validFilter.page, validFilter.pageSize, count, true));
         }

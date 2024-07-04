@@ -2,21 +2,30 @@
 using Microsoft.AspNetCore.Mvc;
 using DATN.Models;
 using DATN.CustomModels;
+using Microsoft.Win32;
+using DATN.Utils;
+using DATN.Utils.Response;
 namespace DATN.Services.RegistDevice
 {
-    public class RegistDeviceService
+    public class RegistDeviceService : IRegistDeviceService
     {
         private readonly DeviceContext _db;
-        
+
         public RegistDeviceService(DeviceContext db)
         {
             _db = db;
         }
 
-        public IActionResult GetAll()
+        public IActionResult GetAll(PaginationFilter filter)
         {
-            var lst = _db.DeviceRegistrations.ToList();
-            return new OkObjectResult(lst);
+            var validFilter = new PaginationFilter(filter.page, filter.pageSize);
+
+            var lst = _db.DeviceRegistrations.Skip((validFilter.page - 1) * validFilter.pageSize)
+                 .Take(validFilter.pageSize).ToList();
+
+            var count = lst.Count();
+
+            return new OkObjectResult(new PagedResponse<List<DeviceRegistration>>(lst, validFilter.page, validFilter.pageSize, count, true));
         }
 
         public IActionResult GetByUser(int userID)
@@ -33,7 +42,7 @@ namespace DATN.Services.RegistDevice
 
         public IActionResult Create(RegistForm regist)
         {
-            using(var transaction = _db.Database.BeginTransaction())
+            using (var transaction = _db.Database.BeginTransaction())
             {
                 try
                 {
@@ -70,16 +79,73 @@ namespace DATN.Services.RegistDevice
                     transaction.Commit();
                     return new OkObjectResult(new { success = true, message = "Create New Success" });
 
-                }catch (Exception ex)
+                } catch (Exception ex)
                 {
                     transaction.Rollback();
-                    return new BadRequestObjectResult(new { success = false, error = $"Can't Create New Regist {ex.Message}"  });
+                    return new BadRequestObjectResult(new { success = false, error = $"Can't Create New Regist {ex.Message}" });
                 }
             }
 
         }
 
+        public IActionResult UpdateStatus(UpdateStatusRegist updateStatus)
+        {
+            using (var transaction = _db.Database.BeginTransaction())
+            {
+                try
+                {
+                    var registForm = _db.DeviceRegistrations.FirstOrDefault(r => r.RegistId == updateStatus.RegistID);
 
+                    if (registForm == null)
+                    {
+                        return new BadRequestObjectResult(new { message = "RegistForm not found" });
+                    }
+
+                    registForm.ManagerId = updateStatus.ManagerID;
+                    registForm.Status = updateStatus.Status;
+                    registForm.Reason = updateStatus.Reason;
+
+                    _db.SaveChanges();
+                    transaction.Commit();
+
+
+                    return new OkObjectResult(new {success = true, message = "Update Status Success" });
+                }
+                catch(Exception ex)
+                {
+                    transaction.Rollback();
+                    return new BadRequestObjectResult(new {success = false, error = ex.ToString() });
+                }           
+            }           
+        }
+
+        public IActionResult Delete(int registID)
+        {
+            using (var transaction = _db.Database.BeginTransaction())
+            {
+                try
+                {
+                    var registForm = _db.DeviceRegistrations.FirstOrDefault(r => r.RegistId == registID);
+
+                    if (registForm == null)
+                    {
+                        return new BadRequestObjectResult(new { message = "RegistForm not found" });
+                    }
+
+                    _db.DeviceRegistrations.Remove(registForm);
+
+                    _db.SaveChanges();
+                    transaction.Commit();
+
+                    return new OkObjectResult(new { success = true, message = "Delete Success" });
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    return new BadRequestObjectResult(new { success = false, error = ex.ToString() });
+                }
+            }
+        }
 
 
     }

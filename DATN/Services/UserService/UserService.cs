@@ -141,7 +141,7 @@ namespace DATN.Services.UserService
                  .Skip((validFilter.page - 1) * validFilter.pageSize)
                  .Take(validFilter.pageSize).ToList();
 
-            var count = lst.Count();
+            var count = _db.Users.Count();
 
             return new OkObjectResult(new PagedResponse<List<UserBasicInfo>>(lst, validFilter.page, validFilter.pageSize, count, true));
         }
@@ -164,13 +164,13 @@ namespace DATN.Services.UserService
            
         }
 
-        public IActionResult ResetPassword(string account)
+        public IActionResult ResetPassword(int id)
         {
             using (var transaction = _db.Database.BeginTransaction())
             {
                 try
                 {
-                    var user = _db.Users.FirstOrDefault(p => p.Account == account);
+                    var user = _db.Users.FirstOrDefault(p => p.UserId == id);
 
                     if (user == null)
                     {
@@ -192,8 +192,33 @@ namespace DATN.Services.UserService
                     transaction.Rollback();
                     return new BadRequestObjectResult(new {error = ex.Message});
                 }
+            }       
+        }
+
+        public IActionResult UpdateRole (int userid, int roleID)
+        {
+            using (var transaction = _db.Database.BeginTransaction())
+            {
+                try
+                {
+                    var user = _db.Users.FirstOrDefault(p => p.UserId == userid);
+                    if (user == null)
+                    {
+                        return new BadRequestObjectResult(new {success = false, error = "Can Not Found User" });
+                    }
+
+                    user.RoleId = roleID;
+                    _db.SaveChanges();
+
+                    transaction.Commit();
+                    return new OkObjectResult(new { success = true, message = "Update Role Success" });
+                }
+                catch(Exception ex)
+                {
+                    transaction.Rollback();
+                    return new BadRequestObjectResult(new {success = false, error = ex.ToString()});
+                }
             }
-                
         }
 
 

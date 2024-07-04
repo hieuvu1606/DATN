@@ -3,6 +3,7 @@ using DATN.Services.CategoryService;
 using DATN.Services.DeviceService;
 using DATN.Services.Email;
 using DATN.Services.ItemService;
+using DATN.Services.RegistDevice;
 using DATN.Services.RoleService;
 using DATN.Services.UserService;
 using DATN.Services.Warehouse;
@@ -21,6 +22,7 @@ builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IDeviceService, DeviceService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<IRegistDeviceService, RegistDeviceService>();
 
 builder.Services.AddScoped<IWarehouseService, WarehouseService>();
 builder.Services.AddScoped<IITemService, ItemServicecs>();
