@@ -103,7 +103,7 @@ namespace DATN.Services.ItemService
 
 
                     if (item.LastMaintenance.HasValue)
-                        newItem.LastMaintenance = new DateOnly(item.LastMaintenance.Value.Year, item.LastMaintenance.Value.Month, item.LastMaintenance.Value.Day);
+                        newItem.LastMaintenance = DateOnly.FromDateTime(item.LastMaintenance);
                     else
                         newItem.LastMaintenance = new DateOnly(0,0,0);
 
