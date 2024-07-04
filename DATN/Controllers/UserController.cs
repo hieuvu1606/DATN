@@ -3,6 +3,7 @@ using DATN.Services.UserService;
 using DATN.Services.RoleService;
 using Microsoft.AspNetCore.Authorization;
 using DATN.CustomModels;
+using DATN.Utils;
 
 namespace DATN.Controllers
 {
@@ -41,9 +42,9 @@ namespace DATN.Controllers
 
         [HttpGet]
         [Route("getall")]
-        public IActionResult GetAllUsers()
+        public IActionResult GetAllUsers([FromQuery] PaginationFilter filter)
         {
-            return _userService.GetBasicInfoUsers();
+            return _userService.GetBasicInfoUsers(filter);
         }
 
         [HttpPost]

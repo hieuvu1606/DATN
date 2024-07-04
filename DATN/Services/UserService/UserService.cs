@@ -9,6 +9,7 @@ using System.Diagnostics;
 using System.Text;
 using ExcelDataReader;
 using System.Transactions;
+using DATN.Utils.Response;
 namespace DATN.Services.UserService
 {
     public class UserService : IUserService
@@ -130,11 +131,19 @@ namespace DATN.Services.UserService
             }            
         }
 
-        public IActionResult GetBasicInfoUsers()
+        public IActionResult GetBasicInfoUsers(PaginationFilter filter)
         {
-            List<UserBasicInfo> lst = _db.Users
-                                        .Select( u => new UserBasicInfo(u.UserId, u.Surname, u.Name, u.Email, u.PhoneNumber, u.CitizenId)).ToList();
-            return new OkObjectResult(lst);
+            var validFilter = new PaginationFilter(filter.page, filter.pageSize);
+            var lst = _db.Users
+                 .Join(_db.Roles,user => user.RoleId, role => role.RoleId,
+                        (user, role) => new UserBasicInfo(
+                           user.UserId, user.Surname, user.Name, user.Email, user.PhoneNumber, role.Descr))
+                 .Skip((validFilter.page - 1) * validFilter.pageSize)
+                 .Take(validFilter.pageSize).ToList();
+
+            var count = lst.Count();
+
+            return new OkObjectResult(new PagedResponse<List<UserBasicInfo>>(lst, validFilter.page, validFilter.pageSize, count, true));
         }
 
         public IActionResult Delete(int id)

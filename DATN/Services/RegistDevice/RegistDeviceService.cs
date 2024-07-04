@@ -25,19 +25,9 @@ namespace DATN.Services.RegistDevice
             return new OkObjectResult(lst);
         }
 
-        public IActionResult GetByManager(int managerID)
-        {
-            var lst = _db.DeviceRegistrations.Where(p => p.ManagerId == managerID).ToList();
-            return new OkObjectResult(lst);
-        }
-
         public IActionResult GetById(int id)
         {
             var regist = _db.DeviceRegistrations.FirstOrDefault(p => p.RegistId == id);
-            if (regist == null)
-            {
-                return new BadRequestObjectResult(new { success = false, error = "Can't Found Regist" });
-            }
             return new OkObjectResult(regist);
         }
 
@@ -88,6 +78,9 @@ namespace DATN.Services.RegistDevice
             }
 
         }
+
+
+
 
     }
 }

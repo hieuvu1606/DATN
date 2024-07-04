@@ -1,4 +1,5 @@
 ﻿using DATN.CustomModels;
+using DATN.Utils;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DATN.Services.UserService
@@ -8,6 +9,6 @@ namespace DATN.Services.UserService
         IActionResult Register(RegisterUser user);
         IActionResult ChangePassword(ChangePassword changePassword);
         IActionResult Login(Login login);
-        IActionResult GetBasicInfoUsers();
+        IActionResult GetBasicInfoUsers(PaginationFilter filter);
     }
 }

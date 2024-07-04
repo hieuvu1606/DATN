@@ -101,11 +101,11 @@ namespace DATN.Services.ItemService
                     else
                         newItem.Status = "";
 
-
-                    if (item.LastMaintenance.HasValue)
+                    //Minvalue == 0001-01-01T00:00:00Z
+                    if (item.LastMaintenance != DateTime.MinValue)
                         newItem.LastMaintenance = DateOnly.FromDateTime(item.LastMaintenance);
                     else
-                        newItem.LastMaintenance = new DateOnly(0,0,0);
+                        newItem.LastMaintenance = DateOnly.MinValue;
 
                     newItem.ImporterId = item.ImporterId;
                     newItem.PosId = item.PosId;

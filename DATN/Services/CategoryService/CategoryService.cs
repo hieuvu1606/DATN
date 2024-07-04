@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using DATN.Utils;
 using System.Web.Http;
 using FromBodyAttribute = Microsoft.AspNetCore.Mvc.FromBodyAttribute;
+using DATN.CustomModels;
+using DATN.Utils.Response;
 
 namespace DATN.Services.CategoryService
 {
@@ -46,8 +48,14 @@ namespace DATN.Services.CategoryService
 
         public IActionResult GetAll([FromQuery] PaginationFilter filter)
         {
-            var lst = _db.Categories.ToList();
-            return new OkObjectResult(lst);
+            var validFilter = new PaginationFilter(filter.page, filter.pageSize);
+
+            var lst = _db.Categories.Skip((validFilter.page - 1) * validFilter.pageSize)
+                 .Take(validFilter.pageSize).ToList();
+
+            var count = lst.Count();
+
+            return new OkObjectResult(new PagedResponse<List<Category>>(lst, validFilter.page, validFilter.pageSize, count, true));
         }
 
         public IActionResult GetByID(int id)
