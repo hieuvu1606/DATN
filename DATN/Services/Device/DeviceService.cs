@@ -30,7 +30,7 @@ namespace DATN.Services.DeviceService
                        join i in _db.Items on p.PosId equals i.PosId
                        join d in _db.Devices on i.DeviceId equals d.DeviceId into itemsGroup
                        from ig in itemsGroup.DefaultIfEmpty()
-                       group new { ig, w, i } by new { w.WarehouseId, w.WarehouseDescr, ig.DeviceId, ig.Descr, ig.ShortDescr } into g
+                       group new { ig, w, i } by new { w.WarehouseId, w.WarehouseDescr, ig.DeviceId, ig.Descr, ig.ShortDescr, ig.Image } into g
                        select new GetDevice
                        {
                            WarehouseID = g.Key.WarehouseId,
@@ -38,6 +38,7 @@ namespace DATN.Services.DeviceService
                            DeviceID = g.Key.DeviceId,
                            DeviceDescr = g.Key.Descr,
                            DeviceShortDescr = g.Key.ShortDescr,
+                           Image = g.Key.Image,
                            CurrentAmount = g.Sum(x => x.ig != null && x.i.IsStored ? 1 : 0),
                            TotalAmount = g.Count(x => x.ig != null)
                        }).Skip((validFilter.page - 1) * validFilter.pageSize)
@@ -69,7 +70,7 @@ namespace DATN.Services.DeviceService
                         join i in _db.Items on p.PosId equals i.PosId
                         join d in _db.Devices on i.DeviceId equals d.DeviceId into itemsGroup
                         from ig in itemsGroup.DefaultIfEmpty()
-                        group new { ig, w, i } by new { w.WarehouseId, w.WarehouseDescr, ig.DeviceId, ig.Descr, ig.ShortDescr } into g
+                        group new { ig, w, i } by new { w.WarehouseId, w.WarehouseDescr, ig.DeviceId, ig.Descr, ig.ShortDescr, ig.Image } into g
                         select new GetDevice
                         {
                             WarehouseID = g.Key.WarehouseId,
@@ -77,6 +78,7 @@ namespace DATN.Services.DeviceService
                             DeviceID = g.Key.DeviceId,
                             DeviceDescr = g.Key.Descr,
                             DeviceShortDescr = g.Key.ShortDescr,
+                            Image = g.Key.Image,
                             CurrentAmount = g.Sum(x => x.ig != null && x.i.IsStored ? 1 : 0),
                             TotalAmount = g.Count(x => x.ig != null)
                         }
@@ -105,12 +107,13 @@ namespace DATN.Services.DeviceService
                        from d in _db.Devices
                        join i in _db.Items on d.DeviceId equals i.DeviceId into itemsGroup
                        from ig in itemsGroup.DefaultIfEmpty()
-                       group new { ig, d } by new { d.DeviceId, d.Descr, d.ShortDescr } into g
+                       group new { ig, d } by new { d.DeviceId, d.Descr, d.ShortDescr, d.Image } into g
                        select new GetDevice
                        {
                            DeviceID = g.Key.DeviceId,
                            DeviceDescr = g.Key.Descr,
                            DeviceShortDescr = g.Key.ShortDescr,
+                           Image = g.Key.Image,
                            CurrentAmount = g.Sum(x => x.ig != null && x.ig.IsStored ? 1 : 0),
                            TotalAmount = g.Count(x => x.ig != null)
                        })
@@ -131,12 +134,13 @@ namespace DATN.Services.DeviceService
                         from d in _db.Devices
                         join i in _db.Items on d.DeviceId equals i.DeviceId into itemsGroup
                         from ig in itemsGroup.DefaultIfEmpty()
-                        group new { ig, d } by new { d.DeviceId, d.Descr, d.ShortDescr } into g
+                        group new { ig, d } by new { d.DeviceId, d.Descr, d.ShortDescr, d.Image } into g
                         select new GetDevice
                         {
                             DeviceID = g.Key.DeviceId,
                             DeviceDescr = g.Key.Descr,
                             DeviceShortDescr = g.Key.ShortDescr,
+                            Image = g.Key.Image,
                             CurrentAmount = g.Sum(x => x.ig != null && x.ig.IsStored ? 1 : 0),
                             TotalAmount = g.Count(x => x.ig != null)
                         })
