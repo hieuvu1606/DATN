@@ -198,7 +198,45 @@ namespace DATN.Services.RegistDevice
                 catch (Exception ex)
                 {
                     transaction.Rollback();
+                    return new OkObjectResult(new { success = true, message = "Cập nhật thất bại" });
+                }
+            }
+        }
+
+        public IActionResult Return(ReturnRegist returnLst)
+        {
+            using(var transaction= _db.Database.BeginTransaction())
+            {
+                try
+                {
+                    //update RegistForm
+                    var registForm = _db.DeviceRegistrations.FirstOrDefault(p => p.RegistId == returnLst.RegistID);
+                    if (registForm != null)
+                    {
+                        registForm.Status = "Đã Trả";
+                        registForm.ActualReturnDate = DateTime.Now;
+                    }
+
+                    //Add Detail Regist & set trạng thái trong kho của thiết bị = false
+                    foreach (var item in returnLst.ListItem)
+                    {
+                        var find = _db.Items.FirstOrDefault(p => p.ItemId == item.ItemID);
+                        if(find != null)
+                        {
+                            var curItem = _db.DetailRegists.FirstOrDefault(p => p.RegistId == returnLst.RegistID && p.ItemId == item.ItemID);
+                            curItem.AfterStatus = item.CurrentStatus;
+                            find.IsStored = true;
+                        }
+                    }
+
+                    _db.SaveChanges();
+                    transaction.Commit();
                     return new OkObjectResult(new { success = true, message = "Cập nhật thành công" });
+                }
+                catch(Exception ex)
+                {
+                    transaction.Rollback();
+                    return new BadRequestObjectResult(new {success = false, error ="Cập nhật thất bại"+ ex.Message});
                 }
             }
         }
