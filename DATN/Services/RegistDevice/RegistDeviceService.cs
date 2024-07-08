@@ -79,7 +79,8 @@ namespace DATN.Services.RegistDevice
                     transaction.Commit();
                     return new OkObjectResult(new { success = true, message = "Create New Success" });
 
-                } catch (Exception ex)
+                }
+                catch (Exception ex)
                 {
                     transaction.Rollback();
                     return new BadRequestObjectResult(new { success = false, error = $"Can't Create New Regist {ex.Message}" });
@@ -109,14 +110,14 @@ namespace DATN.Services.RegistDevice
                     transaction.Commit();
 
 
-                    return new OkObjectResult(new {success = true, message = "Update Status Success" });
+                    return new OkObjectResult(new { success = true, message = "Update Status Success" });
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     transaction.Rollback();
-                    return new BadRequestObjectResult(new {success = false, error = ex.ToString() });
-                }           
-            }           
+                    return new BadRequestObjectResult(new { success = false, error = ex.ToString() });
+                }
+            }
         }
 
         public IActionResult Delete(int registID)
@@ -147,6 +148,60 @@ namespace DATN.Services.RegistDevice
             }
         }
 
+        public IActionResult Borrow(BorrowRegist borrowLst)
+        {
+            using (var transaction = _db.Database.BeginTransaction())
+            {
+                try
+                {
+                    //update RegistForm
+                    var registForm = _db.DeviceRegistrations.FirstOrDefault(p => p.RegistId == borrowLst.RegistID);
+                    if (registForm != null)
+                    {
+                        registForm.Status = "Đã Mượn";
+                        registForm.ActualBorrowDate = DateTime.Now;
+                    }
+
+                    //Add Detail Regist & set trạng thái trong kho của thiết bị = false
+                    foreach (var item in borrowLst.ListItemID)
+                    {
+                        var find = _db.Items.FirstOrDefault(p => p.ItemId == item);
+                        if (find != null)
+                        {
+                            var detail = new DetailRegist();
+                            detail.RegistId = borrowLst.RegistID;
+                            detail.DeviceId = find.DeviceId;
+                            detail.ItemId = find.ItemId;
+                            detail.BeforeStatus = find.Status;
+                            find.IsStored = false;
+
+                            _db.DetailRegists.Add(detail);
+                        }
+                    }
+                    _db.SaveChanges();
+
+                    //Update ConfirmQty List Device Regist
+                    var lstDeviceRegist = _db.ListDeviceRegists.Where(p => p.RegistId == registForm.RegistId).ToList();
+                    foreach (var item in lstDeviceRegist)
+                    {
+                        var lst = _db.DetailRegists.Where(p => p.RegistId == item.RegistId && p.DeviceId == item.DeviceId).ToList();
+
+                        var confirmQty = lst.Count();
+
+                        item.ConfirmQuantity = confirmQty;
+                    }
+
+                    _db.SaveChanges();
+                    transaction.Commit();
+                    return new OkObjectResult(new { success = true, message = "Cập nhật thành công" });
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    return new OkObjectResult(new { success = true, message = "Cập nhật thành công" });
+                }
+            }
+        }
 
     }
 }

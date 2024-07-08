@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace DATN.Models;
 
@@ -23,13 +24,13 @@ public partial class DeviceRegistration
 
     public int WarehouseId { get; set; }
 
-    public string? ActualReturnDate { get; set; }
+    public DateTime? ActualReturnDate { get; set; }
 
-    public string? ActualBorrowDate { get; set; }
+    public DateTime? ActualBorrowDate { get; set; }
 
     public string? Reason { get; set; }
-
+    [JsonIgnore]
     public virtual ICollection<ListDeviceRegist> ListDeviceRegists { get; set; } = new List<ListDeviceRegist>();
-
+    [JsonIgnore]
     public virtual User User { get; set; } = null!;
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace DATN.Models;
 
@@ -26,12 +27,12 @@ public partial class Item
     public int? PosId { get; set; }
 
     public string Qr { get; set; } = null!;
-
+    [JsonIgnore]
     public virtual ICollection<DetailRegist> DetailRegists { get; set; } = new List<DetailRegist>();
-
+    [JsonIgnore]
     public virtual Device Device { get; set; } = null!;
-
+    [JsonIgnore]
     public virtual User Importer { get; set; } = null!;
-
+    [JsonIgnore]
     public virtual Position? Pos { get; set; }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 
 namespace DATN.Models;
@@ -10,6 +11,6 @@ public partial class Warehouse
     public string? Address { get; set; }
 
     public string WarehouseDescr { get; set; } = null!;
-
+    [JsonIgnore]
     public virtual ICollection<Position> Positions { get; set; } = new List<Position>();
 }

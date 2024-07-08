@@ -19,44 +19,51 @@ namespace DATN.Controllers
 
         [HttpPost]
         [Route("create")]
-        public IActionResult Create([FromBody]RegistForm regist)
+        public IActionResult Create([FromBody] RegistForm regist)
         {
             return _registDeviceService.Create(regist);
         }
 
         [HttpDelete]
-        [Route("delete/id{}")]
-        IActionResult Delete(int registID)
+        [Route("delete/{id}")]
+        public IActionResult Delete(int registID)
         {
             return _registDeviceService.Delete(registID);
         }
 
         [HttpGet]
         [Route("getall")]
-        IActionResult GetAll(PaginationFilter filter)
+        public IActionResult GetAll(PaginationFilter filter)
         {
             return _registDeviceService.GetAll(filter);
         }
 
         [HttpGet]
         [Route("getbyid/{registID}")]
-        IActionResult GetById(int registID)
+        public IActionResult GetById(int registID)
         {
             return _registDeviceService.GetById(registID);
         }
 
         [HttpGet]
-        [Route("getbyuser")]
-        IActionResult GetByUser(int userID)
+        [Route("getbyuser/{userID}")]
+        public IActionResult GetByUser(int userID)
         {
             return _registDeviceService.GetByUser(userID);
         }
 
         [HttpPost]
         [Route("updateStatus")]
-        IActionResult UpdateStatus([FromBody]UpdateStatusRegist updateStatus)
+        public IActionResult UpdateStatus([FromBody]UpdateStatusRegist updateStatus)
         {
             return _registDeviceService.UpdateStatus(updateStatus);
+        }
+
+        [HttpPost]
+        [Route("borrow")]
+        public IActionResult Borrow([FromBody]BorrowRegist borrrow)
+        {
+            return _registDeviceService.Borrow(borrrow);
         }
     }
 }

@@ -6,6 +6,7 @@ namespace DATN.Services.RegistDevice
 {
     public interface IRegistDeviceService
     {
+        IActionResult Borrow(BorrowRegist borrowLst);
         IActionResult Create(RegistForm regist);
         IActionResult Delete(int registID);
         IActionResult GetAll(PaginationFilter filter);

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using DATN.CustomModels;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace DATN.Models;
 
@@ -16,9 +14,6 @@ public partial class DeviceContext : DbContext
         : base(options)
     {
     }
-    #region CustomModel
-    public virtual DbSet<GetDevice> GetDevices{ get; set; }
-    #endregion
 
     public virtual DbSet<Category> Categories { get; set; }
 
@@ -50,9 +45,6 @@ public partial class DeviceContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-
-        modelBuilder.Entity<GetDevice>(entity => entity.HasNoKey());
-
         modelBuilder.Entity<Category>(entity =>
         {
             entity.HasKey(e => e.CategoryId).HasName("PK_PhanLoai");
@@ -131,12 +123,8 @@ public partial class DeviceContext : DbContext
             entity.ToTable("DeviceRegistration");
 
             entity.Property(e => e.RegistId).HasColumnName("RegistID");
-            entity.Property(e => e.ActualBorrowDate)
-                .HasMaxLength(10)
-                .IsFixedLength();
-            entity.Property(e => e.ActualReturnDate)
-                .HasMaxLength(10)
-                .IsFixedLength();
+            entity.Property(e => e.ActualBorrowDate).HasColumnType("datetime");
+            entity.Property(e => e.ActualReturnDate).HasColumnType("datetime");
             entity.Property(e => e.ManagerId).HasColumnName("ManagerID");
             entity.Property(e => e.RegistDate).HasColumnType("datetime");
             entity.Property(e => e.Status).HasMaxLength(50);
@@ -266,5 +254,6 @@ public partial class DeviceContext : DbContext
 
         OnModelCreatingPartial(modelBuilder);
     }
+
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 }
