@@ -1,7 +1,8 @@
 ﻿using DATN.CustomModels;
 using DATN.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.VisualBasic;
+using DATN.Utils;
+
 
 namespace DATN.Services.ItemService
 {
@@ -115,6 +116,10 @@ namespace DATN.Services.ItemService
 
                     _db.Items.Add(newItem);
                     _db.SaveChanges();
+
+                    newItem.Qr = QRGenerator.QRconvert(newItem.ItemId);
+                    _db.SaveChanges();
+
                     transaction.Commit();
 
                     return new OkObjectResult(new { succes = true, message = "Update Item Success" });

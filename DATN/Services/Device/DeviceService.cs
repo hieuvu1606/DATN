@@ -37,8 +37,8 @@ namespace DATN.Services.DeviceService
                            DeviceID = g.Key.DeviceId,
                            DeviceDescr = g.Key.Descr,
                            DeviceShortDescr = g.Key.ShortDescr,
-                           CurrentAmount = g.Sum(x => x.i.IsStored == true ? 1 : 0),
-                           TotalAmount = g.Count()
+                           CurrentAmount = g.Sum(x => x.ig != null && x.ig.IsStored ? 1 : 0),
+                           TotalAmount = g.Count(x => x.ig != null)
                        }).Skip((validFilter.page - 1) * validFilter.pageSize)
                         .Take(validFilter.pageSize).ToList();
 
@@ -74,8 +74,8 @@ namespace DATN.Services.DeviceService
                            DeviceID = g.Key.DeviceId,
                            DeviceDescr = g.Key.Descr,
                            DeviceShortDescr = g.Key.ShortDescr,
-                           CurrentAmount = g.Sum(x => x.i.IsStored == true ? 1 : 0),
-                           TotalAmount = g.Count()
+                           CurrentAmount = g.Sum(x => x.ig != null && x.ig.IsStored ? 1 : 0),
+                           TotalAmount = g.Count(x => x.ig != null)
                        })
                        .Where(p => p.DeviceDescr.Contains(name) || p.DeviceShortDescr.Contains(name))
                        .Skip((validFilter.page - 1) * validFilter.pageSize)
@@ -238,6 +238,7 @@ namespace DATN.Services.DeviceService
             newDevice.ShortDescr = device.ShortDescr;
             newDevice.DescrFunction = device.DescrFunction;
             newDevice.CategoryId = device.CategoryId;
+            newDevice.Image = device.Image;
             newDevice.Pdf = device.Pdf;
         }
     }
