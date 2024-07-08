@@ -28,8 +28,9 @@ namespace DATN.Services.DeviceService
             var lst = (from w in _db.Warehouses
                        join p in _db.Positions on w.WarehouseId equals p.WarehouseId
                        join i in _db.Items on p.PosId equals i.PosId
-                       join d in _db.Devices on i.DeviceId equals d.DeviceId
-                       group new { w, d, i } by new { w.WarehouseId, w.WarehouseDescr, d.DeviceId, d.Descr, d.ShortDescr } into g
+                       join d in _db.Devices on i.DeviceId equals d.DeviceId into itemsGroup
+                       from ig in itemsGroup.DefaultIfEmpty()
+                       group new { ig, w, i } by new { w.WarehouseId, w.WarehouseDescr, ig.DeviceId, ig.Descr, ig.ShortDescr } into g
                        select new GetDevice
                        {
                            WarehouseID = g.Key.WarehouseId,
@@ -37,7 +38,7 @@ namespace DATN.Services.DeviceService
                            DeviceID = g.Key.DeviceId,
                            DeviceDescr = g.Key.Descr,
                            DeviceShortDescr = g.Key.ShortDescr,
-                           CurrentAmount = g.Sum(x => x.ig != null && x.ig.IsStored ? 1 : 0),
+                           CurrentAmount = g.Sum(x => x.ig != null && x.i.IsStored ? 1 : 0),
                            TotalAmount = g.Count(x => x.ig != null)
                        }).Skip((validFilter.page - 1) * validFilter.pageSize)
                         .Take(validFilter.pageSize).ToList();
@@ -62,25 +63,28 @@ namespace DATN.Services.DeviceService
         {
             var validFilter = new PaginationFilter(filter.page, filter.pageSize);
 
-            var lst = (from w in _db.Warehouses
-                       join p in _db.Positions on w.WarehouseId equals p.WarehouseId
-                       join i in _db.Items on p.PosId equals i.PosId
-                       join d in _db.Devices on i.DeviceId equals d.DeviceId
-                       group new { w, d, i } by new { w.WarehouseId, w.WarehouseDescr, d.DeviceId, d.Descr, d.ShortDescr } into g
-                       select new GetDevice
-                       {
-                           WarehouseID = g.Key.WarehouseId,
-                           WarehouseDescr = g.Key.WarehouseDescr,
-                           DeviceID = g.Key.DeviceId,
-                           DeviceDescr = g.Key.Descr,
-                           DeviceShortDescr = g.Key.ShortDescr,
-                           CurrentAmount = g.Sum(x => x.ig != null && x.ig.IsStored ? 1 : 0),
-                           TotalAmount = g.Count(x => x.ig != null)
-                       })
-                       .Where(p => p.DeviceDescr.Contains(name) || p.DeviceShortDescr.Contains(name))
-                       .Skip((validFilter.page - 1) * validFilter.pageSize)
-                        .Take(validFilter.pageSize).ToList();
-
+            var lst = (
+                        from w in _db.Warehouses
+                        join p in _db.Positions on w.WarehouseId equals p.WarehouseId
+                        join i in _db.Items on p.PosId equals i.PosId
+                        join d in _db.Devices on i.DeviceId equals d.DeviceId into itemsGroup
+                        from ig in itemsGroup.DefaultIfEmpty()
+                        group new { ig, w, i } by new { w.WarehouseId, w.WarehouseDescr, ig.DeviceId, ig.Descr, ig.ShortDescr } into g
+                        select new GetDevice
+                        {
+                            WarehouseID = g.Key.WarehouseId,
+                            WarehouseDescr = g.Key.WarehouseDescr,
+                            DeviceID = g.Key.DeviceId,
+                            DeviceDescr = g.Key.Descr,
+                            DeviceShortDescr = g.Key.ShortDescr,
+                            CurrentAmount = g.Sum(x => x.ig != null && x.i.IsStored ? 1 : 0),
+                            TotalAmount = g.Count(x => x.ig != null)
+                        }
+                    )
+                    .Where(p => p.DeviceDescr.Contains(name) || p.DeviceShortDescr.Contains(name))
+                    .Skip((validFilter.page - 1) * validFilter.pageSize)
+                    .Take(validFilter.pageSize)
+                    .ToList();
             if (warehouseID != 0)
             {
                 lst = lst.Where(p => p.WarehouseID == warehouseID).ToList();
