@@ -137,7 +137,7 @@ namespace DATN.Services.UserService
             var lst = _db.Users
                  .Join(_db.Roles,user => user.RoleId, role => role.RoleId,
                         (user, role) => new UserBasicInfo(
-                           user.UserId, user.Surname, user.Name, user.Email, user.PhoneNumber, role.Descr))
+                           user.UserId, user.Surname, user.Name, user.Email, user.PhoneNumber, user.RoleId, role.Descr))
                  .Skip((validFilter.page - 1) * validFilter.pageSize)
                  .Take(validFilter.pageSize).ToList();
 
@@ -148,19 +148,26 @@ namespace DATN.Services.UserService
 
         public IActionResult Delete(int id)
         {
-            try
+            using(var transaction = _db.Database.BeginTransaction())
             {
-                var item = _db.Users.Where(p => p.UserId == id).FirstOrDefault();
-                if(item != null)
+                try
                 {
-                    _db.Users.Remove(item);
+                    var item = _db.Users.Where(p => p.UserId == id).FirstOrDefault();
+                    if (item != null)
+                    {
+                        _db.Users.Remove(item);
+                    }
+                    _db.SaveChanges();
+                    transaction.Commit();
+                    return new OkObjectResult(new { message = "Success" });
                 }
-                return new OkObjectResult(new { message = "Success" });
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    return new BadRequestObjectResult(new { error = ex.Message });
+                }
             }
-            catch(Exception ex)
-            {
-                return new BadRequestObjectResult(new { error = ex.Message});
-            }
+           
            
         }
 
