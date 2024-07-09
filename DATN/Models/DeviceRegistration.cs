@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Newtonsoft.Json;
 
 namespace DATN.Models;
 
@@ -29,8 +28,10 @@ public partial class DeviceRegistration
     public DateTime? ActualBorrowDate { get; set; }
 
     public string? Reason { get; set; }
-    [JsonIgnore]
+
+    public string? Notice { get; set; }
+
     public virtual ICollection<ListDeviceRegist> ListDeviceRegists { get; set; } = new List<ListDeviceRegist>();
-    [JsonIgnore]
+
     public virtual User User { get; set; } = null!;
 }

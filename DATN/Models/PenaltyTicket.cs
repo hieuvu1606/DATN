@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace DATN.Models;
@@ -15,6 +14,6 @@ public partial class PenaltyTicket
     public bool? Status { get; set; }
 
     public int? TotalFine { get; set; }
-    [JsonIgnore]
+
     public virtual ICollection<DetailsPenaltyTicket> DetailsPenaltyTickets { get; set; } = new List<DetailsPenaltyTicket>();
 }

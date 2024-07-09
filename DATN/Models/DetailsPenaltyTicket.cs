@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace DATN.Models;
@@ -15,8 +14,8 @@ public partial class DetailsPenaltyTicket
     public int DeviceId { get; set; }
 
     public int Fine { get; set; }
-    [JsonIgnore]
+
     public virtual DetailRegist DetailRegist { get; set; } = null!;
-    [JsonIgnore]
+
     public virtual PenaltyTicket Penalty { get; set; } = null!;
 }

@@ -50,6 +50,7 @@ namespace DATN.Services.RegistDevice
                     {
                         UserId = regist.UserID,
                         Proof = null,
+                        ManagerId = null,
                         RegistDate = DateTime.Now,
                         BorrowDate = regist.BorrowDate,
                         ReturnDate = regist.ReturnDate,
@@ -57,7 +58,8 @@ namespace DATN.Services.RegistDevice
                         WarehouseId = regist.WarehouseID,
                         ActualBorrowDate = null,
                         ActualReturnDate = null,
-                        Reason = ""
+                        Reason = "",
+                        Notice = regist.Notice,
                     };
 
                     _db.DeviceRegistrations.Add(deviceRegist);
