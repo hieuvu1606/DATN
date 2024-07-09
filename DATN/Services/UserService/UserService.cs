@@ -137,7 +137,7 @@ namespace DATN.Services.UserService
             var lst = _db.Users
                  .Join(_db.Roles,user => user.RoleId, role => role.RoleId,
                         (user, role) => new UserBasicInfo(
-                           user.UserId, user.Surname, user.Name, user.Email, user.PhoneNumber, user.RoleId, role.Descr))
+                           user.UserId, user.Surname, user.Name, user.Email, user.PhoneNumber, role.Descr, user.RoleId))
                  .Skip((validFilter.page - 1) * validFilter.pageSize)
                  .Take(validFilter.pageSize).ToList();
 

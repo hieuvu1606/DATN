@@ -152,5 +152,43 @@ namespace DATN.Services.ItemService
             newItem.ImporterId = item.ImporterId;
             newItem.PosId = item.PosId;
         }
+
+        public IActionResult GetTree(int warehouseID, int registID)
+        {
+            var result = (from w in _db.Warehouses
+                          join p in _db.Positions on w.WarehouseId equals p.WarehouseId
+                          join i in _db.Items on p.PosId equals i.PosId
+                          join d in _db.Devices on i.DeviceId equals d.DeviceId
+                          join lr in _db.ListDeviceRegists on d.DeviceId equals lr.DeviceId
+                          join dr in _db.DeviceRegistrations on lr.RegistId equals dr.RegistId
+                          where w.WarehouseId == warehouseID && dr.RegistId == registID && i.IsStored == true
+                          group new { w, d, i } by new { w.WarehouseId, w.WarehouseDescr, d.DeviceId, d.Descr } into g
+                          select new
+                          {
+                              g.Key.WarehouseId,
+                              g.Key.WarehouseDescr,
+                              g.Key.DeviceId,
+                              g.Key.Descr,
+                              Items = g.Select(x => x.i.ItemId).ToList()
+                          }).ToList();
+
+            var groupedResult = result.GroupBy(r => new { r.WarehouseId, r.WarehouseDescr })
+                .Select(grp => new TreeItem
+                {
+                    WarehouseID = grp.Key.WarehouseId,
+                    WarehouseDescr = grp.Key.WarehouseDescr,
+                    ListDevice = grp.GroupBy(d => new { d.DeviceId, d.Descr })
+                                 .Select(deviceGroup => new DeviceNode
+                                 {
+                                     DeviceID = deviceGroup.Key.DeviceId,
+                                     DeviceDescr = deviceGroup.Key.Descr,
+                                     ListItemID = deviceGroup.SelectMany(d => d.Items).Distinct().ToList()
+                                 }).ToList()
+                }).ToList();
+
+            return new OkObjectResult(groupedResult);
+        }
+
+
     }
 }

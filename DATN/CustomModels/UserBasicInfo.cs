@@ -2,7 +2,7 @@
 {
     public class UserBasicInfo
     {
-        public UserBasicInfo(int userId, string surname, string name, string email, string phoneNumber, string roleDescr)
+        public UserBasicInfo(int userId, string surname, string name, string email, string phoneNumber, string roleDescr, int roleID)
         {
             UserId = userId;
             Surname = surname;
@@ -10,6 +10,7 @@
             Email = email;
             PhoneNumber = phoneNumber;
             RoleDescr = roleDescr;
+            RoleID = roleID;
         }
 
         public int UserId { get; set; }
@@ -23,5 +24,6 @@
         public string PhoneNumber { get; set; } = null!;
 
         public string RoleDescr { get; set; }
+        public int RoleID { get; set; }
     }
 }

@@ -40,7 +40,7 @@ namespace DATN.Controllers
 
         [HttpPost]
         [Route("update")]
-        public IActionResult Update([FromBody]Item item)
+        public IActionResult Update([FromBody] Item item)
         {
             return _itemService.Update(item);
         }
@@ -54,9 +54,16 @@ namespace DATN.Controllers
 
         [HttpPost]
         [Route("create")]
-        public IActionResult Create([FromBody]CreateItem item)
+        public IActionResult Create([FromBody] CreateItem item)
         {
             return _itemService.Create(item);
+        }
+
+        [HttpGet]
+        [Route("getTree/{warehouseID}&{registID}")]
+        public IActionResult GetTree(int warehouseID, int registID)
+        {
+            return _itemService.GetTree(warehouseID, registID);
         }
     }
 }

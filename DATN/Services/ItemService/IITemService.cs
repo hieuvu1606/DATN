@@ -12,5 +12,6 @@ namespace DATN.Services.ItemService
         IActionResult Update(Item item);
         IActionResult Delete(int id);
         IActionResult Create(CreateItem item);
+        IActionResult GetTree(int warehouseID, int registID);
     }
 }
