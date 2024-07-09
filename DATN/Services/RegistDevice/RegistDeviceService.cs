@@ -76,6 +76,7 @@ namespace DATN.Services.RegistDevice
                         };
                         _db.ListDeviceRegists.Add(newList);
                     }
+
                     _db.SaveChanges();
 
                     transaction.Commit();

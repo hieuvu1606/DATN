@@ -33,7 +33,7 @@ namespace DATN.Controllers
 
         [HttpGet]
         [Route("getall")]
-        public IActionResult GetAll(PaginationFilter filter)
+        public IActionResult GetAll([FromQuery]PaginationFilter filter)
         {
             return _registDeviceService.GetAll(filter);
         }
