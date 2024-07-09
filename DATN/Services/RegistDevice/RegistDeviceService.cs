@@ -65,13 +65,13 @@ namespace DATN.Services.RegistDevice
                     _db.DeviceRegistrations.Add(deviceRegist);
                     _db.SaveChanges();
 
-                    foreach (ListDeviceRegist lstDevice in deviceRegist.ListDeviceRegists)
+                    foreach (var lstDevice in regist.ListRegist)
                     {
                         var newList = new ListDeviceRegist
                         {
                             RegistId = deviceRegist.RegistId,
-                            DeviceId = lstDevice.DeviceId,
-                            BorrowQuantity = lstDevice.BorrowQuantity,
+                            DeviceId = lstDevice.DeviceID,
+                            BorrowQuantity = lstDevice.Quantity,
                             ConfirmQuantity = 0
                         };
                         _db.ListDeviceRegists.Add(newList);

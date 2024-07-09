@@ -12,6 +12,13 @@ namespace DATN.CustomModels
         public string Notice {  get; set; }
 
         // Properties from ListDeviceRegist
-        public List<ListDeviceRegist> ListDeviceRegists { get; set; } = new List<ListDeviceRegist>();
+        public List<ListRegist> ListRegist { get; set; } = new List<ListRegist>();
+    }
+
+
+    public class ListRegist
+    {
+        public int DeviceID { get; set; }
+        public int Quantity { get; set; }
     }
 }
