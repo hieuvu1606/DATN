@@ -1,4 +1,5 @@
-﻿using System;
+﻿using System.Text.Json.Serialization;
+using System;
 using System.Collections.Generic;
 
 namespace DATN.Models;
@@ -24,10 +25,10 @@ public partial class User
     public string Password { get; set; } = null!;
 
     public bool RandomPassword { get; set; }
-
+    [JsonIgnore]
     public virtual ICollection<DeviceRegistration> DeviceRegistrations { get; set; } = new List<DeviceRegistration>();
-
+    [JsonIgnore]
     public virtual ICollection<Item> Items { get; set; } = new List<Item>();
-
+    [JsonIgnore]
     public virtual Role Role { get; set; } = null!;
 }

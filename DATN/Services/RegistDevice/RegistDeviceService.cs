@@ -15,7 +15,7 @@ namespace DATN.Services.RegistDevice
         {
             _db = db;
         }
-
+        #region Device Regist
         public IActionResult GetAll(PaginationFilter filter)
         {
             var validFilter = new PaginationFilter(filter.page, filter.pageSize);
@@ -253,6 +253,27 @@ namespace DATN.Services.RegistDevice
                 }
             }
         }
+        #endregion
 
+        #region List Device Regist
+        public IActionResult GetList(int registID)
+        {
+            var result = new List<GetListDetail>();
+            var lst = _db.ListDeviceRegists.Where(p => p.RegistId == registID).ToList();
+            foreach (var device in lst)
+            {
+                var lstDetail = _db.DetailRegists.Where(p => p.RegistId == registID && p.DeviceId == device.DeviceId).ToList();
+
+                var detail = new GetListDetail
+                {
+                    DeviceRegist =  device ,
+                    ListDetails = lstDetail
+                };
+
+                result.Add(detail);
+            }
+            return new OkObjectResult(result);
+        }
+        #endregion
     }
 }

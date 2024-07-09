@@ -2,6 +2,7 @@
 using DATN.Services.RegistDevice;
 using DATN.Utils;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Identity.Client;
 
 namespace DATN.Controllers
 {
@@ -10,12 +11,12 @@ namespace DATN.Controllers
     public class RegistDeviceController : Controller
     {
         private readonly IRegistDeviceService _registDeviceService;
-
         public RegistDeviceController(IRegistDeviceService registDeviceService)
         {
             _registDeviceService = registDeviceService;
         }
 
+        #region Device Regist
 
         [HttpPost]
         [Route("create")]
@@ -72,5 +73,15 @@ namespace DATN.Controllers
         {
             return _registDeviceService.Return(returnRegist);
         }
+        #endregion
+
+        #region List Device Regist
+        [HttpGet]
+        [Route("listDeviceRegist/{registID}")]
+        public IActionResult GetListDevice(int registID)
+        {
+            return _registDeviceService.GetList(registID);
+        }
+        #endregion
     }
 }

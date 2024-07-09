@@ -1,4 +1,5 @@
-﻿using System;
+﻿using System.Text.Json.Serialization;
+using System;
 using System.Collections.Generic;
 
 namespace DATN.Models;
@@ -30,8 +31,8 @@ public partial class DeviceRegistration
     public string? Reason { get; set; }
 
     public string? Notice { get; set; }
-
+    [JsonIgnore]
     public virtual ICollection<ListDeviceRegist> ListDeviceRegists { get; set; } = new List<ListDeviceRegist>();
-
+    [JsonIgnore]
     public virtual User User { get; set; } = null!;
 }

@@ -12,6 +12,7 @@ namespace DATN.Services.RegistDevice
         IActionResult GetAll(PaginationFilter filter);
         IActionResult GetById(int id);
         IActionResult GetByUser(int userID);
+        IActionResult GetList(int registID);
         IActionResult Return(ReturnRegist returnLst);
         IActionResult UpdateStatus(UpdateStatusRegist updateStatus);
     }
