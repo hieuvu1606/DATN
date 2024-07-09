@@ -24,10 +24,10 @@ namespace DATN.Controllers
         }
 
         [HttpGet]
-        [Route("getbyid/{id}")]
-        public IActionResult GetByID(int id)
+        [Route("getbyid/{deviceID}&&{warehouseID}")]
+        public IActionResult GetByID(int id, int warehouseID)
         {
-            return _deviceService.GetByID(id);
+            return _deviceService.GetByID(id, warehouseID);
         }
 
         [HttpGet]
