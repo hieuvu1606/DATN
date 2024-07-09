@@ -6,8 +6,12 @@ namespace DATN.CustomModels
     {
         public int RegistId { get; set; }
         public int ManagerId { get; set; }
-        public string Proof { get; set; }
-        public int? TotalFine { get; set; }
-        public List<DetailsPenaltyTicket> Details { get; set; }
+        public List<PenaltyItem> ListPenalty { get; set; }
+    }
+
+    public class PenaltyItem
+    {
+        public int ItemID { get; set; }
+        public int Fine { get; set; }
     }
 }

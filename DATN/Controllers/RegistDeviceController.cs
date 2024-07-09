@@ -65,5 +65,12 @@ namespace DATN.Controllers
         {
             return _registDeviceService.Borrow(borrrow);
         }
+
+        [HttpPost]
+        [Route("return")]
+        public IActionResult Return([FromBody]ReturnRegist returnRegist)
+        {
+            return _registDeviceService.Return(returnRegist);
+        }
     }
 }

@@ -3,11 +3,12 @@ using DATN.Models;
 using DATN.Utils;
 using DATN.Utils.Response;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace DATN.Services.PenaltyTicketService
 {
-    public class PenaltyTicketService
+    public class PenaltyTicketService : IPenaltyTicketService
     {
         private readonly DeviceContext _db;
         public PenaltyTicketService(DeviceContext db)
@@ -27,11 +28,11 @@ namespace DATN.Services.PenaltyTicketService
             return new OkObjectResult(new PagedResponse<List<PenaltyTicket>>(lst, validFilter.page, validFilter.pageSize, count, true));
         }
 
-        public IActionResult GetByID(PaginationFilter filter, int id)
+        public IActionResult GetDetailByID(PaginationFilter filter, int penaltyID)
         {
             var validFilter = new PaginationFilter(filter.page, filter.pageSize);
 
-            var lst = _db.PenaltyTickets.Where(p => p.PenaltyId == id).Skip((validFilter.page - 1) * validFilter.pageSize)
+            var lst = _db.PenaltyTickets.Where(p => p.PenaltyId == penaltyID).Skip((validFilter.page - 1) * validFilter.pageSize)
                         .Take(validFilter.pageSize).ToList();
 
             var count = lst.Count();
@@ -74,19 +75,29 @@ namespace DATN.Services.PenaltyTicketService
                 try
                 {
                     var ticket = new PenaltyTicket();
+                    ticket.ManagerId = newTicket.ManagerId;
                     ticket.Status = false;
                     ticket.Proof = "";
-                    ticket.TotalFine = newTicket.TotalFine;
-
+                    ticket.TotalFine = 0;
+                    _db.PenaltyTickets.Add(ticket);
                     _db.SaveChanges();
 
-                    foreach (DetailsPenaltyTicket newDetail in newTicket.Details)
+                    var totalfine = 0;
+                    foreach (var newDetail in newTicket.ListPenalty)
                     {
                         var detail = new DetailsPenaltyTicket();
                         detail.PenaltyId = ticket.PenaltyId;
                         detail.RegistId = newTicket.RegistId;
+                        detail.ItemId = newDetail.ItemID;
+                        detail.DeviceId = _db.Items.Where(p => p.ItemId == newDetail.ItemID).Select(p => p.DeviceId).FirstOrDefault();
+                        detail.Fine = newDetail.Fine;
 
+                        totalfine += newDetail.Fine;
+
+                        _db.DetailsPenaltyTickets.Add(detail);
                     }
+
+                    ticket.TotalFine = totalfine;
 
 
                     _db.SaveChanges();
@@ -102,6 +113,28 @@ namespace DATN.Services.PenaltyTicketService
             }
         }
 
-
+        public IActionResult UpdateStatus (int penaltyID)
+        {
+            using(var transaction = _db.Database.BeginTransaction())
+            {
+                try
+                {
+                    var findTicket = _db.PenaltyTickets.FirstOrDefault(p => p.PenaltyId == penaltyID);
+                    if(findTicket == null)
+                    {
+                        return new BadRequestObjectResult(new {success = false, error = "Không tìm thấy phiếu phạt"});
+                    }
+                    findTicket.Status = true;
+                    _db.SaveChanges();
+                    transaction.Commit();
+                    return new OkObjectResult(new { success = true, message = "Cập nhật phiếu phạt thành công" });
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    return new BadRequestObjectResult(new { success = false, error = ex.Message });
+                }
+            }
+        }
     }
 }

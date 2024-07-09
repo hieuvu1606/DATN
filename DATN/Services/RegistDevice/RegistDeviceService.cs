@@ -217,6 +217,8 @@ namespace DATN.Services.RegistDevice
                         registForm.ActualReturnDate = DateTime.Now;
                     }
 
+                    var fineLst = new List<ReturnItem>();
+                    var fine = false;
                     //Add Detail Regist & set trạng thái trong kho của thiết bị = false
                     foreach (var item in returnLst.ListItem)
                     {
@@ -226,12 +228,20 @@ namespace DATN.Services.RegistDevice
                             var curItem = _db.DetailRegists.FirstOrDefault(p => p.RegistId == returnLst.RegistID && p.ItemId == item.ItemID);
                             curItem.AfterStatus = item.CurrentStatus;
                             find.IsStored = true;
+                            if(item.CurrentStatus == "Hỏng" || item.CurrentStatus == "Mất")
+                            {
+                                fine = true;
+                                fineLst.Add(item);
+                            }
                         }
                     }
 
                     _db.SaveChanges();
                     transaction.Commit();
-                    return new OkObjectResult(new { success = true, message = "Cập nhật thành công" });
+                    if(fine ==  true)
+                        return new OkObjectResult(new { fine = $"{fine}", fineList = fineLst });
+                    else
+                        return new OkObjectResult(new { fine = $"{fine}",  success = true, message = "Cập nhật thành công" });
                 }
                 catch(Exception ex)
                 {
