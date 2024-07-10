@@ -166,7 +166,7 @@ namespace DATN.Services.RegistDevice
                     }
 
                     var check = _db.DetailRegists.FirstOrDefault(p => p.RegistId == registForm.RegistId);
-                    if (check != null) { return new BadRequestObjectResult(new {success = false, message = "Phiếu Đăng Ký Đã Chuyển Trạng Thái Đã Mượn"}) }
+                    if (check != null) { return new BadRequestObjectResult(new { success = false, message = "Phiếu Đăng Ký Đã Chuyển Trạng Thái Đã Mượn" }); }
                     //Add Detail Regist & set trạng thái trong kho của thiết bị = false
                     foreach (var item in borrowLst.ListItemID)
                     {
