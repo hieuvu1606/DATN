@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 
-
 namespace DATN.Models;
 
 public partial class Device

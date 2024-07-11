@@ -80,24 +80,22 @@ public partial class DeviceContext : DbContext
 
         modelBuilder.Entity<DetailsPenaltyTicket>(entity =>
         {
-            entity.HasKey(e => new { e.PenaltyId, e.RegistId, e.ItemId, e.DeviceId }).HasName("PK_DetailsPenaltyTicket_1");
+            entity.HasKey(e => new { e.PenaltyId, e.RegistId, e.LineRef });
 
             entity.ToTable("DetailsPenaltyTicket");
 
             entity.Property(e => e.PenaltyId).HasColumnName("PenaltyID");
             entity.Property(e => e.RegistId).HasColumnName("RegistID");
-            entity.Property(e => e.ItemId).HasColumnName("ItemID");
-            entity.Property(e => e.DeviceId).HasColumnName("DeviceID");
 
             entity.HasOne(d => d.Penalty).WithMany(p => p.DetailsPenaltyTickets)
                 .HasForeignKey(d => d.PenaltyId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_DetailsPenaltyTicket_PenaltyTicket1");
 
-            entity.HasOne(d => d.DetailRegist).WithMany(p => p.DetailsPenaltyTickets)
-                .HasForeignKey(d => new { d.RegistId, d.DeviceId, d.ItemId })
+            entity.HasOne(d => d.Regist).WithMany(p => p.DetailsPenaltyTickets)
+                .HasForeignKey(d => d.RegistId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_DetailsPenaltyTicket_DetailRegist");
+                .HasConstraintName("FK_DetailsPenaltyTicket_DeviceRegistration");
         });
 
         modelBuilder.Entity<Device>(entity =>

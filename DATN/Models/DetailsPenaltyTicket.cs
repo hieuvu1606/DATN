@@ -10,13 +10,13 @@ public partial class DetailsPenaltyTicket
 
     public int RegistId { get; set; }
 
-    public int ItemId { get; set; }
+    public int LineRef { get; set; }
 
-    public int DeviceId { get; set; }
+    public string Descr { get; set; } = null!;
 
     public int Fine { get; set; }
     [JsonIgnore]
-    public virtual DetailRegist DetailRegist { get; set; } = null!;
-    [JsonIgnore]
     public virtual PenaltyTicket Penalty { get; set; } = null!;
+    [JsonIgnore]
+    public virtual DeviceRegistration Regist { get; set; } = null!;
 }
