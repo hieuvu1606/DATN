@@ -48,9 +48,9 @@ namespace DATN.Controllers
 
         [HttpGet]
         [Route("getbyuser/{userID}")]
-        public IActionResult GetByUser(int userID)
+        public IActionResult GetByUser(PaginationFilter filter, int userID)
         {
-            return _registDeviceService.GetByUser(userID);
+            return _registDeviceService.GetByUser(filter, userID);
         }
 
         [HttpPost]

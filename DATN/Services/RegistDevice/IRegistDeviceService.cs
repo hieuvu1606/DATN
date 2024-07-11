@@ -11,7 +11,7 @@ namespace DATN.Services.RegistDevice
         IActionResult Delete(int registID);
         IActionResult GetAll(PaginationFilter filter);
         IActionResult GetById(int id);
-        IActionResult GetByUser(int userID);
+        IActionResult GetByUser(PaginationFilter filter, int userID);
         IActionResult GetList(int registID);
         IActionResult Return(ReturnRegist returnLst);
         IActionResult UpdateStatus(UpdateStatusRegist updateStatus);

@@ -28,10 +28,16 @@ namespace DATN.Services.RegistDevice
             return new OkObjectResult(new PagedResponse<List<DeviceRegistration>>(lst, validFilter.page, validFilter.pageSize, count, true));
         }
 
-        public IActionResult GetByUser(int userID)
+        public IActionResult GetByUser(PaginationFilter filter, int userID)
         {
-            var lst = _db.DeviceRegistrations.Where(p => p.UserId == userID).ToList();
-            return new OkObjectResult(lst);
+            var validFilter = new PaginationFilter(filter.page, filter.pageSize);
+
+            var lst = _db.DeviceRegistrations.Where(p => p.UserId == userID).Skip((validFilter.page - 1) * validFilter.pageSize)
+                 .Take(validFilter.pageSize).ToList();
+
+            var count = lst.Count();
+
+            return new OkObjectResult(new PagedResponse<List<DeviceRegistration>>(lst, validFilter.page, validFilter.pageSize, count, true));
         }
 
         public IActionResult GetById(int id)
