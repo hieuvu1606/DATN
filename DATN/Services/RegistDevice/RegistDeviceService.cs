@@ -274,6 +274,7 @@ namespace DATN.Services.RegistDevice
 
                 var detail = new GetListDetail
                 {
+                    DeviceDescr = _db.Devices.Where(p => p.DeviceId == device.DeviceId).Select(p => p.Descr).FirstOrDefault().ToString(),
                     DeviceRegist =  device ,
                     ListDetails = lstDetail
                 };
