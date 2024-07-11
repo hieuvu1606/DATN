@@ -6,10 +6,11 @@ namespace DATN.Services.PenaltyTicketService
 {
     public interface IPenaltyTicketService
     {
-        IActionResult Create(CreatePenalty newTicket);
+        IActionResult Create(PostPenalty newTicket);
         IActionResult GetAll(PaginationFilter filter);
-        IActionResult GetDetailByID(PaginationFilter filter, int id);
+        IActionResult GetByID(int id);
         IActionResult GetByUserID(PaginationFilter filter, int userId);
+        IActionResult GetDetail(PaginationFilter filter, int id);
         IActionResult UpdateStatus(int penaltyID);
     }
 }

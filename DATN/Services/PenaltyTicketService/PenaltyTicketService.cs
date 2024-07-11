@@ -3,6 +3,7 @@ using DATN.Models;
 using DATN.Utils;
 using DATN.Utils.Response;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 using System.Linq;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
@@ -11,6 +12,8 @@ namespace DATN.Services.PenaltyTicketService
     public class PenaltyTicketService : IPenaltyTicketService
     {
         private readonly DeviceContext _db;
+
+        #region Penalty
         public PenaltyTicketService(DeviceContext db)
         {
             _db = db;
@@ -28,16 +31,12 @@ namespace DATN.Services.PenaltyTicketService
             return new OkObjectResult(new PagedResponse<List<PenaltyTicket>>(lst, validFilter.page, validFilter.pageSize, count, true));
         }
 
-        public IActionResult GetDetailByID(PaginationFilter filter, int penaltyID)
+        public IActionResult GetByID(int penaltyID)
         {
-            var validFilter = new PaginationFilter(filter.page, filter.pageSize);
 
-            var lst = _db.PenaltyTickets.Where(p => p.PenaltyId == penaltyID).Skip((validFilter.page - 1) * validFilter.pageSize)
-                        .Take(validFilter.pageSize).ToList();
+            var ticket = _db.PenaltyTickets.FirstOrDefault(p => p.PenaltyId == penaltyID);
 
-            var count = lst.Count();
-
-            return new OkObjectResult(new PagedResponse<List<PenaltyTicket>>(lst, validFilter.page, validFilter.pageSize, count, true));
+            return new OkObjectResult(ticket);
         }
 
         public IActionResult GetByUserID (PaginationFilter filter,int userId)
@@ -47,8 +46,7 @@ namespace DATN.Services.PenaltyTicketService
 
             var lst  = (from pt in _db.PenaltyTickets
                         join dpt in _db.DetailsPenaltyTickets on pt.PenaltyId equals dpt.PenaltyId
-                        join drg in _db.DetailRegists on new { dpt.RegistId, dpt.DeviceId, dpt.ItemId } equals new { drg.RegistId, drg.DeviceId, drg.ItemId }
-                        join dr in _db.DeviceRegistrations on drg.RegistId equals dr.RegistId
+                        join dr in _db.DeviceRegistrations on dpt.RegistId equals dr.RegistId
                         where dr.UserId == userId
                         select new PenaltyTicket
                         {
@@ -68,14 +66,14 @@ namespace DATN.Services.PenaltyTicketService
             return new OkObjectResult(new PagedResponse<List<PenaltyTicket>>(lst, validFilter.page, validFilter.pageSize, count, true));
         }
 
-        public IActionResult Create(CreatePenalty newTicket)
+        public IActionResult Create(PostPenalty newTicket)
         {
             using (var transaction = _db.Database.BeginTransaction())
             {
                 try
                 {
                     var ticket = new PenaltyTicket();
-                    ticket.ManagerId = newTicket.ManagerId;
+                    ticket.ManagerId = newTicket.ManagerID;
                     ticket.Status = false;
                     ticket.Proof = "";
                     ticket.TotalFine = 0;
@@ -87,9 +85,9 @@ namespace DATN.Services.PenaltyTicketService
                     {
                         var detail = new DetailsPenaltyTicket();
                         detail.PenaltyId = ticket.PenaltyId;
-                        detail.RegistId = newTicket.RegistId;
-                        detail.ItemId = newDetail.ItemID;
-                        detail.DeviceId = _db.Items.Where(p => p.ItemId == newDetail.ItemID).Select(p => p.DeviceId).FirstOrDefault();
+                        detail.RegistId = newTicket.RegistID;
+                        detail.LineRef = newDetail.LineRef;
+                        detail.Descr = newDetail.Descr;
                         detail.Fine = newDetail.Fine;
 
                         totalfine += newDetail.Fine;
@@ -112,7 +110,6 @@ namespace DATN.Services.PenaltyTicketService
                 }
             }
         }
-
         public IActionResult UpdateStatus (int penaltyID)
         {
             using(var transaction = _db.Database.BeginTransaction())
@@ -136,5 +133,20 @@ namespace DATN.Services.PenaltyTicketService
                 }
             }
         }
+        #endregion
+
+        #region Detail Penalty
+        public IActionResult GetDetail(PaginationFilter filter, int id)
+        {
+            var validFilter = new PaginationFilter(filter.page, filter.pageSize);
+
+            var lst = _db.DetailsPenaltyTickets.Where(p => p.PenaltyId == id || p.RegistId == id).Skip((validFilter.page - 1) * validFilter.pageSize)
+                        .Take(validFilter.pageSize).ToList();
+
+            var count = lst.Count();
+
+            return new OkObjectResult(new PagedResponse<List<DetailsPenaltyTicket>>(lst, validFilter.page, validFilter.pageSize, count, true));
+        }
+        #endregion
     }
 }

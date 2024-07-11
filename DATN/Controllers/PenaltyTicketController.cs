@@ -18,7 +18,7 @@ namespace DATN.Controllers
 
         [HttpPost]
         [Route("create")]
-        public IActionResult Create([FromBody] CreatePenalty newTicket)
+        public IActionResult Create([FromBody] PostPenalty newTicket)
         {
             return _penaltyTicketService.Create(newTicket);
         }
@@ -32,9 +32,9 @@ namespace DATN.Controllers
 
         [HttpGet]
         [Route("getByID/{id}")]
-        public IActionResult GetDetailByID([FromQuery] PaginationFilter filter, int penaltyID)
+        public IActionResult GetByID(int penaltyID)
         {
-            return _penaltyTicketService.GetDetailByID(filter, penaltyID);
+            return _penaltyTicketService.GetByID(penaltyID);
         }
 
         [HttpGet]
@@ -50,5 +50,13 @@ namespace DATN.Controllers
         {
             return _penaltyTicketService.UpdateStatus(penaltyID);
         }
+
+        [HttpGet]
+        [Route("getDetail/{ticketID}")]
+        public IActionResult GetDetail([FromQuery] PaginationFilter filter, int ticketID)
+        {
+            return _penaltyTicketService.GetDetail(filter, ticketID);
+        }
+
     }
 }

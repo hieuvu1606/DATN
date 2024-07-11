@@ -220,7 +220,10 @@ namespace DATN.Services.RegistDevice
             {
                 try
                 {
-                    //update RegistForm
+                    var fineLst = new List<CreatePenalty>();
+                    var fineCheck = false;
+
+                    #region Update RegistForm
                     var registForm = _db.DeviceRegistrations.FirstOrDefault(p => p.RegistId == returnLst.RegistID);
                     if (registForm != null)
                     {
@@ -228,31 +231,73 @@ namespace DATN.Services.RegistDevice
                         registForm.ActualReturnDate = DateTime.Now;
                     }
 
-                    var fineLst = new List<ReturnItem>();
-                    var fine = false;
+                    DateTime? registReturnDate = registForm.ActualReturnDate;
+
+                    DateOnly tempDate = registForm.ReturnDate;
+                    DateTime actualReturnDate = tempDate.ToDateTime(TimeOnly.MinValue);
+
+                    TimeSpan? days = actualReturnDate - registReturnDate;
+                    if (days.Value.TotalDays > 0)
+                    {
+                        fineCheck = true;
+                        var fine = new CreatePenalty()
+                        {
+                            LineRef = -1,
+                            Descr = $"Nộp trễ {days.Value.TotalDays} ngày với ngày đăng ký trả",
+                            Fine = 0
+                        };
+                        fineLst.Add(fine);
+                    }
+                    #endregion
+
+                    #region Tạo danh sách phạt
                     //Add Detail Regist & set trạng thái trong kho của thiết bị = false
                     foreach (var item in returnLst.ListItem)
                     {
+                        string descr = string.Empty;
                         var find = _db.Items.FirstOrDefault(p => p.ItemId == item.ItemID);
                         if(find != null)
                         {
                             var curItem = _db.DetailRegists.FirstOrDefault(p => p.RegistId == returnLst.RegistID && p.ItemId == item.ItemID);
                             curItem.AfterStatus = item.CurrentStatus;
-                            find.IsStored = true;
                             if(item.CurrentStatus == "Hỏng" || item.CurrentStatus == "Mất")
                             {
-                                fine = true;
-                                fineLst.Add(item);
+                                //Lấy tên Device để diễn giải phiếu phạt
+                                var deviceDescr = (from i in _db.Items
+                                                   join d in _db.Devices on i.DeviceId equals d.DeviceId
+                                                   where i.ItemId == curItem.ItemId
+                                                   select d.Descr).FirstOrDefault();
+
+                                fineCheck = true ;
+                                if(item.CurrentStatus == "Mất")
+                                {
+                                    find.IsStored = false;
+                                    descr = $"Mất Thiết Bị {deviceDescr} Mã {curItem.ItemId}";
+                                    
+                                }
+                                else
+                                {
+                                    find.IsStored = true;
+                                    descr = $"Hỏng Thiết Bị {deviceDescr} Mã {curItem.ItemId}";
+                                }
+
+                                var fine = new CreatePenalty();
+                                fine.Descr = descr;
+                                fine.LineRef = curItem.ItemId;
+                                fine.Fine = 0;
+
+                                fineLst.Add(fine);
                             }
                         }
                     }
+                    #endregion
 
                     _db.SaveChanges();
                     transaction.Commit();
-                    if(fine ==  true)
-                        return new OkObjectResult(new { fine = $"{fine}", fineList = fineLst });
+                    if(fineCheck ==  true)
+                        return new OkObjectResult(new { fine = true, fineList = fineLst });
                     else
-                        return new OkObjectResult(new { fine = $"{fine}",  success = true, message = "Cập nhật thành công" });
+                        return new OkObjectResult(new { fine = false,  success = true, message = "Cập nhật thành công" });
                 }
                 catch(Exception ex)
                 {

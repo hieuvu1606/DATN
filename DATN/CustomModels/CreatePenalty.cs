@@ -4,14 +4,17 @@ namespace DATN.CustomModels
 {
     public class CreatePenalty
     {
-        public int RegistId { get; set; }
-        public int ManagerId { get; set; }
-        public List<PenaltyItem> ListPenalty { get; set; }
+        public int LineRef { get; set; }
+
+        public string Descr { get; set; } = null!;
+
+        public int Fine { get; set; }
     }
 
-    public class PenaltyItem
+    public class PostPenalty : CreatePenalty
     {
-        public int ItemID { get; set; }
-        public int Fine { get; set; }
+        public int RegistID { get; set; }
+        public int ManagerID { get; set; }
+        public List<CreatePenalty> ListPenalty { get; set; }
     }
 }
