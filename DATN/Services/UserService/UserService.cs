@@ -13,6 +13,7 @@ using DATN.Utils.Response;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using Newtonsoft.Json.Linq;
 namespace DATN.Services.UserService
 {
     public class UserService : IUserService
@@ -78,13 +79,38 @@ namespace DATN.Services.UserService
             {
                 var user = AuthenticateUser(login);
 
-                if (user == null)
+                if (user != null)
                 {
-                    return new BadRequestObjectResult(new { error = "Account does not exist" });
-                }
+                    var token = GenerateJSONWebToken(user);
+                    var successResponse = new Response<object>
+                    {
+                        Succeeded = true,
+                        Data = new
+                        {
+                            Token = token,
+                            account = user.Account,
+                            RoleID = _db.Roles.Where(p => p.Descr == user.Role).FirstOrDefault().RoleId,
+                            Role = user.Role,
+                            RandomPassword = user.RandomPassword,
+                            UserID = user.UserId,
+                        },
 
-                var tokenString = GenerateJSONWebToken(user);
-                return new OkObjectResult(new { token = tokenString, success = true, message = "Đăng Nhập Thành Công" });
+                        Message = "Login successful"
+                    };
+
+                    return new OkObjectResult(successResponse);
+                }
+                else
+                {
+                    var errorResponse = new Response<object>
+                    {
+                        Succeeded = false,
+                        Errors = new[] { "Invalid username or password" },
+                        Message = "Authentication failed"
+                    };
+
+                    return new UnauthorizedObjectResult(errorResponse);
+                }
             }
             catch (Exception ex)
             {
@@ -139,7 +165,7 @@ namespace DATN.Services.UserService
                 issuer: _configuration["Jwt:Issuer"],
                 audience: _configuration["Jwt:Issuer"],
                 claims: claims,
-                expires: DateTime.Now.AddDays(7),
+                expires: DateTime.Now.AddYears(1),
                 signingCredentials: credentials);
 
             return new JwtSecurityTokenHandler().WriteToken(token);
