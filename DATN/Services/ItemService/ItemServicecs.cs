@@ -161,7 +161,7 @@ namespace DATN.Services.ItemService
                           join d in _db.Devices on i.DeviceId equals d.DeviceId
                           join lr in _db.ListDeviceRegists on d.DeviceId equals lr.DeviceId
                           join dr in _db.DeviceRegistrations on lr.RegistId equals dr.RegistId
-                          where w.WarehouseId == warehouseID && dr.RegistId == registID && i.IsStored == true
+                          where w.WarehouseId == warehouseID && lr.RegistId == registID && i.IsStored == true
                           group new { w, d, i } by new { w.WarehouseId, w.WarehouseDescr, d.DeviceId, d.Descr } into g
                           select new
                           {

@@ -11,7 +11,7 @@ namespace DATN.CustomModels
         public int Fine { get; set; }
     }
 
-    public class PostPenalty : CreatePenalty
+    public class PostPenalty
     {
         public int RegistID { get; set; }
         public int ManagerID { get; set; }

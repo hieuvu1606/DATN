@@ -186,7 +186,7 @@ namespace DATN.Services.RegistDevice
                     var checkQty = _db.ListDeviceRegists.Where(p => p.RegistId == registForm.RegistId).ToList();
                     foreach (var item in checkQty)
                     {
-                        var lst = _db.DetailRegists.Where(p => p.RegistId == item.RegistId && p.DeviceId == item.DeviceId).ToList();
+                        var lst = _db.ListDeviceRegists.Where(p => p.RegistId == item.RegistId && p.DeviceId == item.DeviceId).ToList();
 
                         var deviceQty = lst.Count();
 
@@ -260,6 +260,10 @@ namespace DATN.Services.RegistDevice
                         registForm.Status = "Đã Trả";
                         registForm.ActualReturnDate = DateTime.Now;
                     }
+                    else
+                    {
+                        return new BadRequestObjectResult(new {success = false, error = "Không tìm thấy phiếu đăng ký này"});
+                    }
 
                     DateTime? registReturnDate = registForm.ActualReturnDate;
 
@@ -267,13 +271,13 @@ namespace DATN.Services.RegistDevice
                     DateTime actualReturnDate = tempDate.ToDateTime(TimeOnly.MinValue);
 
                     TimeSpan? days = actualReturnDate - registReturnDate;
-                    if (days.Value.TotalDays > 0)
+                    if (days.Value.TotalDays < 0)
                     {
                         fineCheck = true;
                         var fine = new CreatePenalty()
                         {
                             LineRef = -1,
-                            Descr = $"Nộp trễ {days.Value.TotalDays} ngày với ngày đăng ký trả",
+                            Descr = $"Nộp trễ {Math.Floor(Math.Abs(days.Value.TotalDays))} ngày với ngày đăng ký trả",
                             Fine = 0
                         };
                         fineLst.Add(fine);
@@ -288,6 +292,7 @@ namespace DATN.Services.RegistDevice
                         var find = _db.Items.FirstOrDefault(p => p.ItemId == item.ItemId);
                         if(find != null)
                         {
+                            find.IsStored = true;
                             var curItem = _db.DetailRegists.FirstOrDefault(p => p.RegistId == returnLst.RegistID && p.ItemId == item.ItemId);
                             curItem.AfterStatus = item.AfterStatus;
                             if(item.AfterStatus == "Hỏng" || item.AfterStatus == "Mất")
@@ -307,7 +312,6 @@ namespace DATN.Services.RegistDevice
                                 }
                                 else
                                 {
-                                    find.IsStored = true;
                                     descr = $"Hỏng Thiết Bị {deviceDescr} Mã {curItem.ItemId}";
                                 }
 
