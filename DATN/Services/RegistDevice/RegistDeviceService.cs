@@ -309,9 +309,18 @@ namespace DATN.Services.RegistDevice
                             curItem.AfterStatus = item.AfterStatus;
                             if(item.AfterStatus == "Hỏng" || item.AfterStatus == "Mất")
                             {
+
+                                if (fineCheck == false)
+                                {
+                                    ticket.ManagerId = 0;
+                                    ticket.Status = false;
+                                    ticket.Proof = "";
+                                    ticket.TotalFine = 0;
+                                    _db.PenaltyTickets.Add(ticket);
+                                    _db.SaveChanges();
+                                }
                                 fineCheck = true;
 
-                                //Lấy tên Device để diễn giải phiếu phạt
                                 var deviceDescr = (from i in _db.Items
                                                    join d in _db.Devices on i.DeviceId equals d.DeviceId
                                                    where i.ItemId == curItem.ItemId
