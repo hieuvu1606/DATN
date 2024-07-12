@@ -52,10 +52,10 @@ namespace DATN.Controllers
         }
 
         [HttpPost]
-        [Route("update")]
-        public IActionResult Update([FromBody] CreateDevice device)
+        [Route("update/{deviceID}")]
+        public IActionResult Update([FromBody] CreateDevice device, int deviceID)
         {
-            return _deviceService.Update(device);
+            return _deviceService.Update(device, deviceID);
         }
 
 

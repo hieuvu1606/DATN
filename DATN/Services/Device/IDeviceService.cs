@@ -11,7 +11,7 @@ namespace DATN.Services.DeviceService
         IActionResult GetByName([FromQuery] PaginationFilter filter, string descr, int warehouseID);
         IActionResult Create(CreateDevice device);
         IActionResult Delete(int id);
-        IActionResult Update(CreateDevice device);
+        IActionResult Update(CreateDevice device, int deviceID);
         IActionResult GetAll([FromQuery] PaginationFilter filter);
         IActionResult GetByName([FromQuery] PaginationFilter filter, string name);
         IActionResult GetByID(int id, int warehouseID);
