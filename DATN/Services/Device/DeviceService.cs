@@ -36,8 +36,8 @@ namespace DATN.Services.DeviceService
                            WarehouseID = g.Key.WarehouseId,
                            WarehouseDescr = g.Key.WarehouseDescr,
                            DeviceID = g.Key.DeviceId,
-                           Descr = g.Key.Descr,
-                           ShortDescr = g.Key.ShortDescr,
+                           DeviceDescr = g.Key.Descr,
+                           DeviceShortDescr = g.Key.ShortDescr,
                            Image = g.Key.Image,
                            CurrentAmount = g.Sum(x => x.ig != null && x.i.IsStored ? 1 : 0),
                            TotalAmount = g.Count(x => x.ig != null)
@@ -67,8 +67,8 @@ namespace DATN.Services.DeviceService
                            WarehouseID = g.Key.WarehouseId,
                            WarehouseDescr = g.Key.WarehouseDescr,
                            DeviceID = g.Key.DeviceId,
-                           Descr = g.Key.Descr,
-                           ShortDescr = g.Key.ShortDescr,
+                           DeviceDescr = g.Key.Descr,
+                           DeviceShortDescr = g.Key.ShortDescr,
                            Image = g.Key.Image,
                            CurrentAmount = g.Sum(x => x.ig != null && x.i.IsStored ? 1 : 0),
                            TotalAmount = g.Count(x => x.ig != null)
@@ -87,8 +87,8 @@ namespace DATN.Services.DeviceService
                        select new GetDevice
                        {
                            DeviceID = g.Key.DeviceId,
-                           Descr = g.Key.Descr,
-                           ShortDescr = g.Key.ShortDescr,
+                           DeviceDescr = g.Key.Descr,
+                           DeviceShortDescr = g.Key.ShortDescr,
                            Image = g.Key.Image,
                            CurrentAmount = g.Sum(x => x.ig != null && x.i.IsStored ? 1 : 0),
                            TotalAmount = g.Count(x => x.ig != null)
@@ -113,14 +113,14 @@ namespace DATN.Services.DeviceService
                             WarehouseID = g.Key.WarehouseId,
                             WarehouseDescr = g.Key.WarehouseDescr,
                             DeviceID = g.Key.DeviceId,
-                            Descr = g.Key.Descr,
-                            ShortDescr = g.Key.ShortDescr,
+                            DeviceDescr = g.Key.Descr,
+                            DeviceShortDescr = g.Key.ShortDescr,
                             Image = g.Key.Image,
                             CurrentAmount = g.Sum(x => x.ig != null && x.i.IsStored ? 1 : 0),
                             TotalAmount = g.Count(x => x.ig != null)
                         }
                     )
-                    .Where(p => p.Descr.Contains(name) || p.ShortDescr.Contains(name))
+                    .Where(p => p.DeviceDescr.Contains(name) || p.DeviceShortDescr.Contains(name))
                     .Skip((validFilter.page - 1) * validFilter.pageSize)
                     .Take(validFilter.pageSize)
                     .ToList();
@@ -148,8 +148,8 @@ namespace DATN.Services.DeviceService
                        select new GetDevice
                        {
                            DeviceID = g.Key.DeviceId,
-                           Descr = g.Key.Descr,
-                           ShortDescr = g.Key.ShortDescr,
+                           DeviceDescr = g.Key.Descr,
+                           DeviceShortDescr = g.Key.ShortDescr,
                            Image = g.Key.Image,
                            CurrentAmount = g.Sum(x => x.ig != null && x.ig.IsStored ? 1 : 0),
                            TotalAmount = g.Count(x => x.ig != null)
@@ -175,13 +175,13 @@ namespace DATN.Services.DeviceService
                         select new GetDevice
                         {
                             DeviceID = g.Key.DeviceId,
-                            Descr = g.Key.Descr,
-                            ShortDescr = g.Key.ShortDescr,
+                            DeviceDescr = g.Key.Descr,
+                            DeviceShortDescr = g.Key.ShortDescr,
                             Image = g.Key.Image,
                             CurrentAmount = g.Sum(x => x.ig != null && x.ig.IsStored ? 1 : 0),
                             TotalAmount = g.Count(x => x.ig != null)
                         })
-                        .Where(p => p.Descr.Contains(name) || p.ShortDescr.Contains(name))
+                        .Where(p => p.DeviceDescr.Contains(name) || p.DeviceShortDescr.Contains(name))
                         .Skip((validFilter.page - 1) * validFilter.pageSize)
                         .Take(validFilter.pageSize)
                         .ToList();
