@@ -353,6 +353,12 @@ namespace DATN.Services.RegistDevice
 
                     _db.DetailsPenaltyTickets.AddRange(fineLst);
 
+                    if(fineCheck == true)
+                    {
+                        var regist = _db.DeviceRegistrations.FirstOrDefault(p => p.RegistId == returnLst.RegistID);
+                        regist.IsFine = true;
+                    }
+
                     _db.SaveChanges();
                     transaction.Commit();
                     if(fineCheck ==  true)

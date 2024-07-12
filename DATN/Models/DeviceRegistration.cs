@@ -31,6 +31,8 @@ public partial class DeviceRegistration
     public string? Reason { get; set; }
 
     public string? Notice { get; set; }
+
+    public bool? IsFine { get; set; }
     [JsonIgnore]
     public virtual ICollection<DetailsPenaltyTicket> DetailsPenaltyTickets { get; set; } = new List<DetailsPenaltyTicket>();
     [JsonIgnore]

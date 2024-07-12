@@ -123,6 +123,9 @@ public partial class DeviceContext : DbContext
             entity.Property(e => e.RegistId).HasColumnName("RegistID");
             entity.Property(e => e.ActualBorrowDate).HasColumnType("datetime");
             entity.Property(e => e.ActualReturnDate).HasColumnType("datetime");
+            entity.Property(e => e.IsFine)
+                .HasDefaultValue(false)
+                .HasColumnName("isFine");
             entity.Property(e => e.ManagerId).HasColumnName("ManagerID");
             entity.Property(e => e.RegistDate).HasColumnType("datetime");
             entity.Property(e => e.Status).HasMaxLength(50);
