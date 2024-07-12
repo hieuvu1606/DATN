@@ -6,6 +6,11 @@ namespace DATN.CustomModels
     {
         public string DeviceDescr { get; set; }
         public ListDeviceRegist DeviceRegist { get; set; }
-        public List<DetailRegist> ListDetails { get; set; }
+        public List<CustomDetail> ListDetails { get; set; }
+    }
+
+    public class CustomDetail : DetailRegist
+    {
+        public string DeviceDescr { get; set; }
     }
 }

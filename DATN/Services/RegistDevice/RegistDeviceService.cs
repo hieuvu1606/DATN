@@ -170,9 +170,39 @@ namespace DATN.Services.RegistDevice
                         registForm.Status = "Đã Mượn";
                         registForm.ActualBorrowDate = DateTime.Now;
                     }
-
                     var check = _db.DetailRegists.FirstOrDefault(p => p.RegistId == registForm.RegistId);
-                    if (check != null) { return new BadRequestObjectResult(new { success = false, message = "Phiếu Đăng Ký Đã Chuyển Trạng Thái Đã Mượn" }); }
+                    if (check == null) { return new BadRequestObjectResult(new { success = false, message = "Không tìm thấy Phiếu Đăng Ký" }); }
+
+                    #region Check Số lượng mượn
+                    var checkin = new List<int>();
+                    foreach (var item in borrowLst.ListItemID)
+                    {
+                        var find = _db.Items.FirstOrDefault(p => p.ItemId == item).DeviceId;
+                        checkin.Add(find);
+                    }
+
+
+                    string error = string.Empty;
+                    var checkQty = _db.ListDeviceRegists.Where(p => p.RegistId == registForm.RegistId).ToList();
+                    foreach (var item in checkQty)
+                    {
+                        var lst = _db.DetailRegists.Where(p => p.RegistId == item.RegistId && p.DeviceId == item.DeviceId).ToList();
+
+                        var deviceQty = lst.Count();
+
+                        var deviceCheckinQty = checkin.Count(id => id == item.DeviceId);
+                        if (deviceCheckinQty > deviceQty)
+                        {
+                            var deviceDescr = _db.Devices.Where(d => d.DeviceId == item.DeviceId).Select(d => d.Descr).FirstOrDefault();
+                            error += $"Thiết bị {deviceDescr} không được mượn quá {deviceCheckinQty}.\n";
+                        }
+
+                    }
+
+                    if (error != "")
+                        return new BadRequestObjectResult(new {success = false, error = $"{error}"});
+                    #endregion
+
                     //Add Detail Regist & set trạng thái trong kho của thiết bị = false
                     foreach (var item in borrowLst.ListItemID)
                     {
@@ -311,21 +341,29 @@ namespace DATN.Services.RegistDevice
         #region List Device Regist
         public IActionResult GetList(int registID)
         {
-            var result = new List<GetListDetail>();
-            var lst = _db.ListDeviceRegists.Where(p => p.RegistId == registID).ToList();
-            foreach (var device in lst)
+            var devices = _db.ListDeviceRegists.Where(p => p.RegistId == registID).ToList();
+
+            var details = _db.DetailRegists.Where(p => p.RegistId == registID).ToList();
+
+            var deviceIds = devices.Select(d => d.DeviceId).Distinct().ToList();
+
+            var deviceDescriptions = _db.Devices.Where(d => deviceIds.Contains(d.DeviceId)).ToDictionary(d => d.DeviceId, d => d.Descr);
+
+            // Build the result
+            var result = devices.Select(device => new GetListDetail
             {
-                var lstDetail = _db.DetailRegists.Where(p => p.RegistId == registID && p.DeviceId == device.DeviceId).ToList();
+                DeviceDescr = deviceDescriptions.ContainsKey(device.DeviceId) ? deviceDescriptions[device.DeviceId] : string.Empty,
+                DeviceRegist = device,
+                ListDetails = details.Where(detail => detail.DeviceId == device.DeviceId)
+                    .Select(detail => new CustomDetail
+                    {
+                        DeviceDescr = deviceDescriptions.ContainsKey(detail.DeviceId) ? deviceDescriptions[detail.DeviceId] : string.Empty,
+                        RegistId = detail.RegistId,
+                        DeviceId = detail.DeviceId,
+                    })
+                    .ToList()
+            }).ToList();
 
-                var detail = new GetListDetail
-                {
-                    DeviceDescr = _db.Devices.Where(p => p.DeviceId == device.DeviceId).Select(p => p.Descr).FirstOrDefault().ToString(),
-                    DeviceRegist =  device ,
-                    ListDetails = lstDetail
-                };
-
-                result.Add(detail);
-            }
             return new OkObjectResult(result);
         }
         #endregion
