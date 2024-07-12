@@ -170,7 +170,7 @@ namespace DATN.Services.RegistDevice
                         registForm.Status = "Đã Mượn";
                         registForm.ActualBorrowDate = DateTime.Now;
                     }
-                    var check = _db.DetailRegists.FirstOrDefault(p => p.RegistId == registForm.RegistId);
+                    var check = _db.DeviceRegistrations.FirstOrDefault(p => p.RegistId == registForm.RegistId);
                     if (check == null) { return new BadRequestObjectResult(new { success = false, message = "Không tìm thấy Phiếu Đăng Ký" }); }
 
                     #region Check Số lượng mượn
