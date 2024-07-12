@@ -79,18 +79,17 @@ namespace DATN.Services.DeviceService
 
         public IActionResult GetByID(int id)
         {
-            var obj = (
-                       from i in _db.Items
-                       join d in _db.Devices on i.DeviceId equals d.DeviceId into itemsGroup
+            var obj = (from d in _db.Devices
+                       join i in _db.Items on d.DeviceId equals i.DeviceId into itemsGroup
                        from ig in itemsGroup.DefaultIfEmpty()
-                       group new { ig, i } by new {ig.DeviceId, ig.Descr, ig.ShortDescr, ig.Image } into g
+                       group new { d, ig } by new { d.DeviceId, d.Descr, d.ShortDescr, d.Image } into g
                        select new GetDevice
                        {
                            DeviceID = g.Key.DeviceId,
                            DeviceDescr = g.Key.Descr,
                            DeviceShortDescr = g.Key.ShortDescr,
                            Image = g.Key.Image,
-                           CurrentAmount = g.Sum(x => x.ig != null && x.i.IsStored ? 1 : 0),
+                           CurrentAmount = g.Sum(x => x.ig != null && x.ig.IsStored ? 1 : 0),
                            TotalAmount = g.Count(x => x.ig != null)
                        }).FirstOrDefault(p => p.DeviceID == id);
 

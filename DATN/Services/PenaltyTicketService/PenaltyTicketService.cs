@@ -136,16 +136,20 @@ namespace DATN.Services.PenaltyTicketService
         #endregion
 
         #region Detail Penalty
-        public IActionResult GetDetail(PaginationFilter filter, int id)
+        public IActionResult GetDetail(int id)
         {
-            var validFilter = new PaginationFilter(filter.page, filter.pageSize);
+            ////var validFilter = new PaginationFilter(filter.page, filter.pageSize);
 
-            var lst = _db.DetailsPenaltyTickets.Where(p => p.PenaltyId == id || p.RegistId == id).Skip((validFilter.page - 1) * validFilter.pageSize)
-                        .Take(validFilter.pageSize).ToList();
+            //var lst = _db.DetailsPenaltyTickets.Where(p => p.PenaltyId == id || p.RegistId == id).Skip((validFilter.page - 1) * validFilter.pageSize)
+            //            .Take(validFilter.pageSize).ToList();
 
-            var count = lst.Count();
+            //var count = lst.Count();
 
-            return new OkObjectResult(new PagedResponse<List<DetailsPenaltyTicket>>(lst, validFilter.page, validFilter.pageSize, count, true));
+            //return new OkObjectResult(new PagedResponse<List<DetailsPenaltyTicket>>(lst, validFilter.page, validFilter.pageSize, count, true));
+
+            var lst = _db.DetailsPenaltyTickets.Where(p => p.PenaltyId == id || p.RegistId == id).ToList();
+
+            return new OkObjectResult(lst);
         }
 
         public IActionResult UpdateDetail(PostPenalty lstDetail)

@@ -53,9 +53,16 @@ namespace DATN.Controllers
 
         [HttpGet]
         [Route("getDetail/{ticketID}")]
-        public IActionResult GetDetail([FromQuery] PaginationFilter filter, int ticketID)
+        public IActionResult GetDetail(int ticketID)
         {
-            return _penaltyTicketService.GetDetail(filter, ticketID);
+            return _penaltyTicketService.GetDetail(ticketID);
+        }
+
+        [HttpPost]
+        [Route("updateDetail")]
+        public IActionResult UpdateDetail([FromBody] PostPenalty penalty)
+        {
+            return _penaltyTicketService.UpdateDetail(penalty);
         }
 
     }
