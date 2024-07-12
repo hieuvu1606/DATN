@@ -8,7 +8,7 @@
 
     public class ReturnItem
     {
-        public int ItemID { get; set;}
-        public string CurrentStatus { get; set;}
+        public int ItemId { get; set;}
+        public string AfterStatus { get; set;}
     }
 }

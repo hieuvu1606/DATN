@@ -10,16 +10,21 @@ using System.Text;
 using ExcelDataReader;
 using System.Transactions;
 using DATN.Utils.Response;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 namespace DATN.Services.UserService
 {
     public class UserService : IUserService
     {
         private readonly DeviceContext _db;
         private readonly IEmailService _emailService;
-        public UserService(DeviceContext db, IEmailService emailService)
+        private readonly IConfiguration _configuration;
+        public UserService(DeviceContext db, IEmailService emailService, IConfiguration config)
         {
             _db = db;
             _emailService = emailService;
+            _configuration = config;
         }
 
         public IActionResult Register(RegisterUser user)
@@ -71,26 +76,72 @@ namespace DATN.Services.UserService
         {
             try
             {
-                var user = _db.Users.FirstOrDefault(p => p.Account == login.Account);
+                var user = AuthenticateUser(login);
 
                 if (user == null)
                 {
                     return new BadRequestObjectResult(new { error = "Account does not exist" });
                 }
-                else
-                {
-                    if (PasswordHasher.VerifyPassword(login.Password, user.Password))
-                    {
-                        return new OkObjectResult(new {success = true, message = "Login Success"});
-                    }
-                    else
-                        return new UnauthorizedResult();
-                }
+
+                var tokenString = GenerateJSONWebToken(user);
+                return new OkObjectResult(new { token = tokenString, success = true, message = "Đăng Nhập Thành Công" });
             }
             catch (Exception ex)
             {
-                return new BadRequestObjectResult(new { error = "", ex.Message });
+                return new BadRequestObjectResult(new { error = ex.Message });
             }
+        }
+
+        private LoginJWT AuthenticateUser(Login login)
+        {
+            var user = _db.Users.FirstOrDefault(p => p.Account == login.Account);
+
+            if (user != null && PasswordHasher.VerifyPassword(login.Password, user.Password))
+            {
+                return new LoginJWT
+                {
+                    Surname = user.Surname,
+                    Name = user.Name,
+                    Email = user.Email,
+                    Role = _db.Roles.Where(p => p.RoleId == user.RoleId).Select(p => p.Descr).FirstOrDefault(),
+                    CitizenId = user.CitizenId,
+                    PhoneNumber = user.PhoneNumber,
+                    UserId = user.UserId,
+                    RandomPassword = user.RandomPassword,
+                    Account = user.Account
+                };
+            }
+
+            return null;
+        }
+
+        private string GenerateJSONWebToken(LoginJWT userInfo)
+        {
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Secret"]));
+            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+
+            var claims = new[]
+            {
+                new Claim(JwtRegisteredClaimNames.Sub, userInfo.Account),
+                new Claim("Account", userInfo.Account),
+                new Claim("Surname", userInfo.Surname),
+                new Claim("Name", userInfo.Name),
+                new Claim("Role", userInfo.Role),
+                new Claim("CitizenId", userInfo.CitizenId),
+                new Claim("PhoneNumber", userInfo.PhoneNumber),
+                new Claim("UserId", userInfo.UserId.ToString()),
+                new Claim("RandomPassword", userInfo.RandomPassword.ToString()),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+            };
+
+            var token = new JwtSecurityToken(
+                issuer: _configuration["Jwt:Issuer"],
+                audience: _configuration["Jwt:Issuer"],
+                claims: claims,
+                expires: DateTime.Now.AddDays(7),
+                signingCredentials: credentials);
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
         public IActionResult ChangePassword(ChangePassword change)

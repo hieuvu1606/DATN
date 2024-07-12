@@ -255,12 +255,12 @@ namespace DATN.Services.RegistDevice
                     foreach (var item in returnLst.ListItem)
                     {
                         string descr = string.Empty;
-                        var find = _db.Items.FirstOrDefault(p => p.ItemId == item.ItemID);
+                        var find = _db.Items.FirstOrDefault(p => p.ItemId == item.ItemId);
                         if(find != null)
                         {
-                            var curItem = _db.DetailRegists.FirstOrDefault(p => p.RegistId == returnLst.RegistID && p.ItemId == item.ItemID);
-                            curItem.AfterStatus = item.CurrentStatus;
-                            if(item.CurrentStatus == "Hỏng" || item.CurrentStatus == "Mất")
+                            var curItem = _db.DetailRegists.FirstOrDefault(p => p.RegistId == returnLst.RegistID && p.ItemId == item.ItemId);
+                            curItem.AfterStatus = item.AfterStatus;
+                            if(item.AfterStatus == "Hỏng" || item.AfterStatus == "Mất")
                             {
                                 //Lấy tên Device để diễn giải phiếu phạt
                                 var deviceDescr = (from i in _db.Items
@@ -269,7 +269,7 @@ namespace DATN.Services.RegistDevice
                                                    select d.Descr).FirstOrDefault();
 
                                 fineCheck = true ;
-                                if(item.CurrentStatus == "Mất")
+                                if(item.AfterStatus == "Mất")
                                 {
                                     find.IsStored = false;
                                     descr = $"Mất Thiết Bị {deviceDescr} Mã {curItem.ItemId}";
