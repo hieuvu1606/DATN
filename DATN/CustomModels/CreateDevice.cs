@@ -4,7 +4,6 @@ namespace DATN.CustomModels
 {
     public class CreateDevice
     {
-
         public int CategoryId { get; set; }
 
         public string Descr { get; set; } = null!;

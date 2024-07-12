@@ -287,7 +287,9 @@ namespace DATN.Services.RegistDevice
                         {
                             LineRef = -1,
                             Descr = $"Nộp trễ {Math.Floor(Math.Abs(days.Value.TotalDays))} ngày với ngày đăng ký trả",
-                            Fine = 0
+                            Fine = 0,
+                            PenaltyId = ticket.PenaltyId,
+                            RegistId = returnLst.RegistID
                         };
                         fineLst.Add(fine);
                     }
@@ -295,6 +297,7 @@ namespace DATN.Services.RegistDevice
 
                     #region Tạo danh sách phạt
                     //Add Detail Regist & set trạng thái trong kho của thiết bị = false
+                    //var fineTicket = _db
                     foreach (var item in returnLst.ListItem)
                     {
                         string descr = string.Empty;
@@ -344,7 +347,7 @@ namespace DATN.Services.RegistDevice
                     _db.SaveChanges();
                     transaction.Commit();
                     if(fineCheck ==  true)
-                        return new OkObjectResult(new { fine = true, message = "Phiếu phạt đã được tạo" });
+                        return new OkObjectResult(new { fine = true, message = $"Phiếu phạt {ticket.PenaltyId} đã được tạo cho phiếu đăng ký {returnLst.RegistID}" });
                     else
                         return new OkObjectResult(new { fine = false,  success = true, message = "Trả thiết bị thành công" });
                 }
