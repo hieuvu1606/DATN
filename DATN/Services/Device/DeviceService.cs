@@ -207,8 +207,15 @@ namespace DATN.Services.DeviceService
                     }
                     else
                     {
-                        var newDevice = new Device();
-                        Update_Device(ref newDevice, device);
+                        var newDevice = new Device()
+                        {
+                            Descr = device.Descr,
+                            ShortDescr = device.ShortDescr,
+                            CategoryId = device.CategoryId,
+                            Image = device.Image,
+                            DescrFunction = device.DescrFunction,
+                            Pdf = device.Pdf
+                        };
                         _db.Devices.Add(newDevice);
                         _db.SaveChanges();
                         transaction.Commit();
