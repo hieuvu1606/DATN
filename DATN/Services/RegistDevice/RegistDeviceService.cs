@@ -250,8 +250,10 @@ namespace DATN.Services.RegistDevice
             {
                 try
                 {
-                    var fineLst = new List<CreatePenalty>();
+                    var fineLst = new List<DetailsPenaltyTicket>();
                     var fineCheck = false;
+                    var ticket = new PenaltyTicket();
+
 
                     #region Update RegistForm
                     var registForm = _db.DeviceRegistrations.FirstOrDefault(p => p.RegistId == returnLst.RegistID);
@@ -273,8 +275,15 @@ namespace DATN.Services.RegistDevice
                     TimeSpan? days = actualReturnDate - registReturnDate;
                     if (days.Value.TotalDays < 0)
                     {
+                        ticket.ManagerId = 0;
+                        ticket.Status = false;
+                        ticket.Proof = "";
+                        ticket.TotalFine = 0;
+                        _db.PenaltyTickets.Add(ticket);
+                        _db.SaveChanges();
+
                         fineCheck = true;
-                        var fine = new CreatePenalty()
+                        var fine = new DetailsPenaltyTicket()
                         {
                             LineRef = -1,
                             Descr = $"Nộp trễ {Math.Floor(Math.Abs(days.Value.TotalDays))} ngày với ngày đăng ký trả",
@@ -297,13 +306,14 @@ namespace DATN.Services.RegistDevice
                             curItem.AfterStatus = item.AfterStatus;
                             if(item.AfterStatus == "Hỏng" || item.AfterStatus == "Mất")
                             {
+                                fineCheck = true;
+
                                 //Lấy tên Device để diễn giải phiếu phạt
                                 var deviceDescr = (from i in _db.Items
                                                    join d in _db.Devices on i.DeviceId equals d.DeviceId
                                                    where i.ItemId == curItem.ItemId
                                                    select d.Descr).FirstOrDefault();
 
-                                fineCheck = true ;
                                 if(item.AfterStatus == "Mất")
                                 {
                                     find.IsStored = false;
@@ -315,10 +325,13 @@ namespace DATN.Services.RegistDevice
                                     descr = $"Hỏng Thiết Bị {deviceDescr} Mã {curItem.ItemId}";
                                 }
 
-                                var fine = new CreatePenalty();
+                                var fine = new DetailsPenaltyTicket();
                                 fine.Descr = descr;
                                 fine.LineRef = curItem.ItemId;
                                 fine.Fine = 0;
+                                fine.PenaltyId = ticket.PenaltyId;
+                                fine.RegistId = returnLst.RegistID;
+
 
                                 fineLst.Add(fine);
                             }
@@ -326,17 +339,19 @@ namespace DATN.Services.RegistDevice
                     }
                     #endregion
 
+                    _db.DetailsPenaltyTickets.AddRange(fineLst);
+
                     _db.SaveChanges();
                     transaction.Commit();
                     if(fineCheck ==  true)
-                        return new OkObjectResult(new { fine = true, fineList = fineLst });
+                        return new OkObjectResult(new { fine = true, message = "Phiếu phạt đã được tạo" });
                     else
-                        return new OkObjectResult(new { fine = false,  success = true, message = "Cập nhật thành công" });
+                        return new OkObjectResult(new { fine = false,  success = true, message = "Trả thiết bị thành công" });
                 }
                 catch(Exception ex)
                 {
                     transaction.Rollback();
-                    return new BadRequestObjectResult(new {success = false, error ="Cập nhật thất bại"+ ex.Message});
+                    return new BadRequestObjectResult(new {success = false, error = "Trả thiết bị thất bại" + ex.Message});
                 }
             }
         }

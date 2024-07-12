@@ -16,12 +16,12 @@ namespace DATN.Controllers
             _penaltyTicketService = penaltyTicketService;
         }
 
-        [HttpPost]
+       /* [HttpPost]
         [Route("create")]
         public IActionResult Create([FromBody] PostPenalty newTicket)
         {
             return _penaltyTicketService.Create(newTicket);
-        }
+        }*/
 
         [HttpGet]
         [Route("getAll")]

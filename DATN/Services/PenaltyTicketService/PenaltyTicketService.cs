@@ -66,7 +66,7 @@ namespace DATN.Services.PenaltyTicketService
             return new OkObjectResult(new PagedResponse<List<PenaltyTicket>>(lst, validFilter.page, validFilter.pageSize, count, true));
         }
 
-        public IActionResult Create(PostPenalty newTicket)
+       /* public IActionResult Create(PostPenalty newTicket)
         {
             using (var transaction = _db.Database.BeginTransaction())
             {
@@ -109,7 +109,7 @@ namespace DATN.Services.PenaltyTicketService
                     return new BadRequestObjectResult(new { success = true, message = "Tạo Phiếu Phạt Thất Bại" + ex.ToString()});
                 }
             }
-        }
+        }*/
         public IActionResult UpdateStatus (int penaltyID)
         {
             using(var transaction = _db.Database.BeginTransaction())
@@ -146,6 +146,41 @@ namespace DATN.Services.PenaltyTicketService
             var count = lst.Count();
 
             return new OkObjectResult(new PagedResponse<List<DetailsPenaltyTicket>>(lst, validFilter.page, validFilter.pageSize, count, true));
+        }
+
+        public IActionResult UpdateDetail(PostPenalty lstDetail)
+        {
+            using (var transaction = _db.Database.BeginTransaction())
+            {
+                try
+                {
+                    var totalFine = 0;
+                    var registID = lstDetail.RegistID;
+                    var penaltyID = lstDetail.PenaltyID;
+                    var managerID = lstDetail.ManagerID;
+
+                    foreach(var detail in lstDetail.ListPenalty)
+                    {
+                        var find = _db.DetailsPenaltyTickets.FirstOrDefault(p => p.RegistId == registID && p.PenaltyId == penaltyID && p.LineRef == detail.LineRef);
+
+                        find.Fine = detail.Fine;
+                        totalFine += detail.Fine;
+                    }
+
+                    var ticket = _db.PenaltyTickets.FirstOrDefault(p => p.PenaltyId == registID);
+                    ticket.TotalFine = totalFine;
+
+                    _db.SaveChanges();
+
+                    transaction.Commit();
+                    return new OkObjectResult(new {success = true, message = "Cập Nhật phiếu phạt thành công" });
+                }
+                catch(Exception ex)
+                {
+                    transaction.Rollback();
+                    return new BadRequestObjectResult(new {success = false, error = ex.ToString() });
+                }
+            }
         }
         #endregion
     }
