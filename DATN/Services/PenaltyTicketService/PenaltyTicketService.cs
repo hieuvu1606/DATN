@@ -23,12 +23,19 @@ namespace DATN.Services.PenaltyTicketService
         {
             var validFilter = new PaginationFilter(filter.page, filter.pageSize);
 
-            var lst = _db.PenaltyTickets.Skip((validFilter.page - 1) * validFilter.pageSize)
-                        .Take(validFilter.pageSize).ToList();
+            var lst = _db.PenaltyTickets.Select(p => new PenaltyTicketNotBool
+                                                {
+                                                    PenaltyId = p.PenaltyId,
+                                                    ManagerId = p.ManagerId,
+                                                    Proof = p.Proof,
+                                                    Status = p.Status.ToString(),
+                                                    TotalFine = p.TotalFine,
+                                                }).Skip((validFilter.page - 1) * validFilter.pageSize)
+                                                            .Take(validFilter.pageSize).ToList();
 
             var count = lst.Count();
 
-            return new OkObjectResult(new PagedResponse<List<PenaltyTicket>>(lst, validFilter.page, validFilter.pageSize, count, true));
+            return new OkObjectResult(new PagedResponse<List<PenaltyTicketNotBool>>(lst, validFilter.page, validFilter.pageSize, count, true));
         }
 
         public IActionResult GetByID(int penaltyID)
