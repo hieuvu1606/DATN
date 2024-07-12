@@ -77,6 +77,29 @@ namespace DATN.Services.DeviceService
             return new OkObjectResult(obj);
         }
 
+        public IActionResult GetByID(int id)
+        {
+            var obj = (from w in _db.Warehouses
+                       join p in _db.Positions on w.WarehouseId equals p.WarehouseId
+                       join i in _db.Items on p.PosId equals i.PosId
+                       join d in _db.Devices on i.DeviceId equals d.DeviceId into itemsGroup
+                       from ig in itemsGroup.DefaultIfEmpty()
+                       group new { ig, w, i } by new { w.WarehouseId, w.WarehouseDescr, ig.DeviceId, ig.Descr, ig.ShortDescr, ig.Image } into g
+                       select new GetDevice
+                       {
+                           WarehouseID = g.Key.WarehouseId,
+                           WarehouseDescr = g.Key.WarehouseDescr,
+                           DeviceID = g.Key.DeviceId,
+                           DeviceDescr = g.Key.Descr,
+                           DeviceShortDescr = g.Key.ShortDescr,
+                           Image = g.Key.Image,
+                           CurrentAmount = g.Sum(x => x.ig != null && x.i.IsStored ? 1 : 0),
+                           TotalAmount = g.Count(x => x.ig != null)
+                       }).FirstOrDefault(p => p.DeviceID == id);
+
+            return new OkObjectResult(obj);
+        }
+
         public IActionResult GetByName([FromQuery] PaginationFilter filter, string name, int warehouseID)
         {
             var validFilter = new PaginationFilter(filter.page, filter.pageSize);

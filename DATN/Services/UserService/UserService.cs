@@ -92,6 +92,7 @@ namespace DATN.Services.UserService
             }
         }
 
+        #region JWT
         private LoginJWT AuthenticateUser(Login login)
         {
             var user = _db.Users.FirstOrDefault(p => p.Account == login.Account);
@@ -143,6 +144,7 @@ namespace DATN.Services.UserService
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+        #endregion
 
         public IActionResult ChangePassword(ChangePassword change)
         {

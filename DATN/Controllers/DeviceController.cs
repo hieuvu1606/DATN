@@ -72,5 +72,12 @@ namespace DATN.Controllers
         {
             return _deviceService.GetByName(filter, name);
         }
+
+        [HttpGet]
+        [Route("getbyid/{id}")]
+        public IActionResult GetByID(int id)
+        {
+            return _deviceService.GetByID(id);
+        }
     }
 }

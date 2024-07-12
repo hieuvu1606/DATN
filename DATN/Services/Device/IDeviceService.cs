@@ -15,5 +15,6 @@ namespace DATN.Services.DeviceService
         IActionResult GetAll([FromQuery] PaginationFilter filter);
         IActionResult GetByName([FromQuery] PaginationFilter filter, string name);
         IActionResult GetByID(int id, int warehouseID);
+        IActionResult GetByID(int id);
     }
 }

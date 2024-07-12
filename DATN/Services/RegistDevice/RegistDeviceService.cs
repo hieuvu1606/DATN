@@ -212,7 +212,7 @@ namespace DATN.Services.RegistDevice
                             var detail = new DetailRegist();
                             detail.RegistId = borrowLst.RegistID;
                             detail.DeviceId = find.DeviceId;
-                            detail.ItemId = find.ItemId;
+                            detail.ItemId = item;
                             detail.BeforeStatus = find.Status;
                             find.IsStored = false;
 
@@ -361,6 +361,7 @@ namespace DATN.Services.RegistDevice
                 ListDetails = details.Where(detail => detail.DeviceId == device.DeviceId)
                     .Select(detail => new CustomDetail
                     {
+                        ItemId = detail.ItemId,
                         DeviceDescr = deviceDescriptions.ContainsKey(detail.DeviceId) ? deviceDescriptions[detail.DeviceId] : string.Empty,
                         RegistId = detail.RegistId,
                         DeviceId = detail.DeviceId,
