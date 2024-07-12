@@ -12,7 +12,7 @@ public partial class PenaltyTicket
 
     public string? Proof { get; set; }
 
-    public bool? Status { get; set; }
+    public bool Status { get; set; }
 
     public int? TotalFine { get; set; }
     [JsonIgnore]

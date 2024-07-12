@@ -28,7 +28,7 @@ namespace DATN.Services.PenaltyTicketService
                                                     PenaltyId = p.PenaltyId,
                                                     ManagerId = p.ManagerId,
                                                     Proof = p.Proof,
-                                                    Status = p.Status.ToString(),
+                                                    Status = p.Status?"Đã Trả" : "Chưa Trả" ,
                                                     TotalFine = p.TotalFine,
                                                 }).Skip((validFilter.page - 1) * validFilter.pageSize)
                                                             .Take(validFilter.pageSize).ToList();
