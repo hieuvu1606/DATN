@@ -279,6 +279,7 @@ namespace DATN.Services.RegistDevice
                         ticket.Status = false;
                         ticket.Proof = "";
                         ticket.TotalFine = 0;
+                        ticket.Status = false;
                         _db.PenaltyTickets.Add(ticket);
                         _db.SaveChanges();
 
@@ -316,6 +317,7 @@ namespace DATN.Services.RegistDevice
                                     ticket.Status = false;
                                     ticket.Proof = "";
                                     ticket.TotalFine = 0;
+                                    ticket.Status = false;
                                     _db.PenaltyTickets.Add(ticket);
                                     _db.SaveChanges();
                                 }

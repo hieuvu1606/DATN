@@ -110,7 +110,7 @@ namespace DATN.Services.PenaltyTicketService
                 }
             }
         }*/
-        public IActionResult UpdateStatus (int penaltyID)
+        public IActionResult UpdateStatus (int penaltyID, bool status)
         {
             using(var transaction = _db.Database.BeginTransaction())
             {
@@ -121,7 +121,7 @@ namespace DATN.Services.PenaltyTicketService
                     {
                         return new BadRequestObjectResult(new {success = false, error = "Không tìm thấy phiếu phạt"});
                     }
-                    findTicket.Status = true;
+                    findTicket.Status = status;
                     _db.SaveChanges();
                     transaction.Commit();
                     return new OkObjectResult(new { success = true, message = "Cập nhật phiếu phạt thành công" });
@@ -171,7 +171,7 @@ namespace DATN.Services.PenaltyTicketService
                         totalFine += detail.Fine;
                     }
 
-                    var ticket = _db.PenaltyTickets.FirstOrDefault(p => p.PenaltyId == registID);
+                    var ticket = _db.PenaltyTickets.FirstOrDefault(p => p.PenaltyId == penaltyID);
                     ticket.TotalFine = totalFine;
 
                     _db.SaveChanges();

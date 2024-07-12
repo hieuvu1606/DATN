@@ -45,10 +45,10 @@ namespace DATN.Controllers
         }
 
         [HttpPost]
-        [Route(("updateStatus/{penaltyID}"))]
-        public IActionResult UpdateStatus(int penaltyID)
+        [Route(("updateStatus/{penaltyID}&{status}"))]
+        public IActionResult UpdateStatus(int penaltyID, bool status)
         {
-            return _penaltyTicketService.UpdateStatus(penaltyID);
+            return _penaltyTicketService.UpdateStatus(penaltyID, status);
         }
 
         [HttpGet]
