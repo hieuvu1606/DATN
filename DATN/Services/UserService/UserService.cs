@@ -178,7 +178,7 @@ namespace DATN.Services.UserService
             {
                 try
                 {
-                    var user = _db.Users.FirstOrDefault(u => u.Account == change.Account);
+                    var user = _db.Users.FirstOrDefault(u => u.UserId == change.UserID);
                     if (user == null)
                     {
                         return new BadRequestObjectResult(new { error = "User does not exist" });

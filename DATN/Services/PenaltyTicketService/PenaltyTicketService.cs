@@ -55,22 +55,31 @@ namespace DATN.Services.PenaltyTicketService
                         join dpt in _db.DetailsPenaltyTickets on pt.PenaltyId equals dpt.PenaltyId
                         join dr in _db.DeviceRegistrations on dpt.RegistId equals dr.RegistId
                         where dr.UserId == userId
-                        select new PenaltyTicket
+                        select new PenaltyTicketNotBool
                         {
                             PenaltyId = pt.PenaltyId,
                             ManagerId = pt.ManagerId,
                             Proof = pt.Proof,
-                            Status = pt.Status,
-                            TotalFine = pt.TotalFine
-                        })
-                        .Skip((validFilter.page - 1) * validFilter.pageSize)
-                        .Take(validFilter.pageSize)
-                        .ToList();
+                            Status = pt.Status ? "Đã Trả" : "Chưa Trả",
+                            TotalFine = pt.TotalFine,
+                        }).Skip((validFilter.page - 1) * validFilter.pageSize)
+                                    .Take(validFilter.pageSize).ToList();
 
 
-            var count = lst.Count();
+            var count = (from pt in _db.PenaltyTickets
+                        join dpt in _db.DetailsPenaltyTickets on pt.PenaltyId equals dpt.PenaltyId
+                        join dr in _db.DeviceRegistrations on dpt.RegistId equals dr.RegistId
+                        where dr.UserId == userId
+                        select new PenaltyTicketNotBool
+                        {
+                            PenaltyId = pt.PenaltyId,
+                            ManagerId = pt.ManagerId,
+                            Proof = pt.Proof,
+                            Status = pt.Status ? "Đã Trả" : "Chưa Trả",
+                            TotalFine = pt.TotalFine,
+                        }).Count();
 
-            return new OkObjectResult(new PagedResponse<List<PenaltyTicket>>(lst, validFilter.page, validFilter.pageSize, count, true));
+            return new OkObjectResult(new PagedResponse<List<PenaltyTicketNotBool>>(lst, validFilter.page, validFilter.pageSize, count, true));
         }
 
        /* public IActionResult Create(PostPenalty newTicket)

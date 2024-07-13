@@ -2,7 +2,7 @@
 {
     public class ChangePassword
     {
-        public string Account { get; set; } = null!;
+        public int UserID { get; set; };
 
         public string OldPassword { get; set; } = null!;
 
