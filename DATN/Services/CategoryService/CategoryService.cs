@@ -53,7 +53,7 @@ namespace DATN.Services.CategoryService
             var lst = _db.Categories.Skip((validFilter.page - 1) * validFilter.pageSize)
                  .Take(validFilter.pageSize).ToList();
 
-            var count = lst.Count();
+            var count = _db.Categories.Count();
 
             return new OkObjectResult(new PagedResponse<List<Category>>(lst, validFilter.page, validFilter.pageSize, count, true));
         }

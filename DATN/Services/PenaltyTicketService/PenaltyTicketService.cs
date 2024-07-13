@@ -33,7 +33,7 @@ namespace DATN.Services.PenaltyTicketService
                                                 }).Skip((validFilter.page - 1) * validFilter.pageSize)
                                                             .Take(validFilter.pageSize).ToList();
 
-            var count = lst.Count();
+            var count = _db.PenaltyTickets.Count();
 
             return new OkObjectResult(new PagedResponse<List<PenaltyTicketNotBool>>(lst, validFilter.page, validFilter.pageSize, count, true));
         }

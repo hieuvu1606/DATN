@@ -23,7 +23,7 @@ namespace DATN.Services.RegistDevice
             var lst = _db.DeviceRegistrations.Skip((validFilter.page - 1) * validFilter.pageSize)
                  .Take(validFilter.pageSize).ToList();
 
-            var count = lst.Count();
+            var count = _db.DeviceRegistrations.Count();
 
             return new OkObjectResult(new PagedResponse<List<DeviceRegistration>>(lst, validFilter.page, validFilter.pageSize, count, true));
         }
@@ -35,7 +35,7 @@ namespace DATN.Services.RegistDevice
             var lst = _db.DeviceRegistrations.Where(p => p.UserId == userID).Skip((validFilter.page - 1) * validFilter.pageSize)
                  .Take(validFilter.pageSize).ToList();
 
-            var count = lst.Count();
+            var count = _db.DeviceRegistrations.Where(p => p.UserId == userID).Count();
 
             return new OkObjectResult(new PagedResponse<List<DeviceRegistration>>(lst, validFilter.page, validFilter.pageSize, count, true));
         }

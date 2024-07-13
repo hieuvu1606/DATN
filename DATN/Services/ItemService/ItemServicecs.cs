@@ -2,6 +2,7 @@
 using DATN.Models;
 using Microsoft.AspNetCore.Mvc;
 using DATN.Utils;
+using DATN.Utils.Response;
 
 
 namespace DATN.Services.ItemService
@@ -21,10 +22,15 @@ namespace DATN.Services.ItemService
             return new OkObjectResult(lst);
         }
 
-        public IActionResult GetByDeviceID(int deviceId)
+        public IActionResult GetByDeviceID(PaginationFilter filter, int deviceId)
         {
+            var validFilter = new PaginationFilter(filter.page, filter.pageSize);
+
             var lst = _db.Items.Where(p => p.DeviceId == deviceId).ToList();
-            return new OkObjectResult(lst);
+
+            var count = _db.Items.Where(p => p.DeviceId == deviceId).Count();
+
+            return new OkObjectResult(new PagedResponse<List<Item>>(lst, validFilter.page, validFilter.pageSize, count, true));
         }
 
         public IActionResult GetByID(int itemID)
