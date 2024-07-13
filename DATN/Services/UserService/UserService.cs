@@ -191,6 +191,9 @@ namespace DATN.Services.UserService
 
                             user.Password = hashedPassword;
 
+                            if(user.RandomPassword)
+                                user.RandomPassword = false;
+
                             _db.SaveChanges();
 
                             transaction.Commit();
@@ -265,6 +268,7 @@ namespace DATN.Services.UserService
                     var (newAccount, newPassword) = AccountGenerator.GenerateAccountAndRandomPassword("","", _db);
 
                     user.Password = newPassword;
+                    user.RandomPassword = false;
                     _db.SaveChanges();
                     transaction.Commit();
                     _emailService.Connect();
