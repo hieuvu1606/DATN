@@ -1,6 +1,7 @@
 ﻿using DATN.CustomModels;
 using DATN.Models;
 using DATN.Services.ItemService;
+using DATN.Utils;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -33,9 +34,9 @@ namespace DATN.Controllers
 
         [HttpGet]
         [Route("getbyDeviceID/{deviceID}")]
-        public IActionResult GetByDeviceID(int deviceID)
+        public IActionResult GetByDeviceID([FromQuery]PaginationFilter filter, int deviceID)
         {
-            return _itemService.GetByDeviceID(deviceID);
+            return _itemService.GetByDeviceID(filter, deviceID);
         }
 
         [HttpPost]
