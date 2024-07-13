@@ -10,7 +10,7 @@ namespace DATN.Services.PenaltyTicketService
         IActionResult GetAll(PaginationFilter filter);
         IActionResult GetByID(int id);
         IActionResult GetByUserID(PaginationFilter filter, int userId);
-        IActionResult GetDetail(int id);
+        IActionResult GetDetail(int check, int id);
         IActionResult UpdateDetail(PostPenalty lstDetail);
         IActionResult UpdateStatus(int penaltyID, bool status);
     }

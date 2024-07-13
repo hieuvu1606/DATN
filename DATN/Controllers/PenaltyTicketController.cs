@@ -52,10 +52,10 @@ namespace DATN.Controllers
         }
 
         [HttpGet]
-        [Route("getDetail/{ticketID}")]
-        public IActionResult GetDetail(int ticketID)
+        [Route("getDetail/{ticketID}&{check}")]
+        public IActionResult GetDetail(int check, int ticketID)
         {
-            return _penaltyTicketService.GetDetail(ticketID);
+            return _penaltyTicketService.GetDetail(check, ticketID);
         }
 
         [HttpPost]

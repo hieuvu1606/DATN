@@ -184,20 +184,39 @@ namespace DATN.Services.RegistDevice
 
                     string error = string.Empty;
                     var checkQty = _db.ListDeviceRegists.Where(p => p.RegistId == registForm.RegistId).ToList();
-                    foreach (var item in checkQty)
+                    foreach(var item in checkQty)
                     {
-                        var lst = _db.ListDeviceRegists.Where(p => p.RegistId == item.RegistId && p.DeviceId == item.DeviceId).ToList();
-
-                        var deviceQty = lst.Count();
-
-                        var deviceCheckinQty = checkin.Count(id => id == item.DeviceId);
-                        if (deviceCheckinQty > deviceQty)
+                        if (item.ConfirmQuantity == item.BorrowQuantity)
                         {
                             var deviceDescr = _db.Devices.Where(d => d.DeviceId == item.DeviceId).Select(d => d.Descr).FirstOrDefault();
-                            error += $"Thiết bị {deviceDescr} không được mượn quá {deviceCheckinQty}.\n";
+                            error += $"Thiết bị {deviceDescr} đã mượn đủ.\n";
                         }
-
                     }
+
+                    if(error == string.Empty)
+                    {
+                        foreach (var item in checkQty)
+                        {
+                            var lst = _db.ListDeviceRegists.Where(p => p.RegistId == item.RegistId && p.DeviceId == item.DeviceId).ToList();
+
+                            var deviceQty = lst.Count();
+
+                            var deviceCheckinQty = checkin.Count(id => id == item.DeviceId);
+
+                            if (item.ConfirmQuantity == item.BorrowQuantity)
+                            {
+                                var deviceDescr = _db.Devices.Where(d => d.DeviceId == item.DeviceId).Select(d => d.Descr).FirstOrDefault();
+                                error += $"Thiết bị {deviceDescr} đã mượn đủ.\n";
+                            }
+
+                            if (deviceCheckinQty > deviceQty)
+                            {
+                                var deviceDescr = _db.Devices.Where(d => d.DeviceId == item.DeviceId).Select(d => d.Descr).FirstOrDefault();
+                                error += $"Thiết bị {deviceDescr} không được mượn quá {item.BorrowQuantity}.\n";
+                            }
+
+                        }
+                    }                
 
                     if (error != "")
                         return new BadRequestObjectResult(new {success = false, error = $"{error}"});
@@ -350,6 +369,9 @@ namespace DATN.Services.RegistDevice
                                 fineLst.Add(fine);
                             }
                         }
+
+                        var findItem = _db.Items.FirstOrDefault(p => p.ItemId == item.ItemId);
+                        findItem.Status = item.AfterStatus;
                     }
                     #endregion
 

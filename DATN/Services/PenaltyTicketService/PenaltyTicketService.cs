@@ -143,7 +143,7 @@ namespace DATN.Services.PenaltyTicketService
         #endregion
 
         #region Detail Penalty
-        public IActionResult GetDetail(int id)
+        public IActionResult GetDetail(int check,int id)
         {
             ////var validFilter = new PaginationFilter(filter.page, filter.pageSize);
 
@@ -153,10 +153,18 @@ namespace DATN.Services.PenaltyTicketService
             //var count = lst.Count();
 
             //return new OkObjectResult(new PagedResponse<List<DetailsPenaltyTicket>>(lst, validFilter.page, validFilter.pageSize, count, true));
+            if(check == 0)
+            {
+                var lst = _db.DetailsPenaltyTickets.Where(p => p.RegistId == id).ToList();
 
-            var lst = _db.DetailsPenaltyTickets.Where(p => p.PenaltyId == id || p.RegistId == id).ToList();
+                return new OkObjectResult(lst);
+            }
+            else
+            {
+                var lst = _db.DetailsPenaltyTickets.Where(p => p.PenaltyId == id).ToList();
 
-            return new OkObjectResult(lst);
+                return new OkObjectResult(lst);
+            }
         }
 
         public IActionResult UpdateDetail(PostPenalty lstDetail)
